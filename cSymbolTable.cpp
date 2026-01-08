@@ -5,6 +5,7 @@
 //**************************************************************
 
 #include "cSymbolTable.h"
+#include "cSymbol.h"
 
 cSymbolTable::cSymbolTable()
 {
@@ -31,4 +32,8 @@ symbolTable_t *decreaseScope()
     return &scopes.back();
 }
 
-
+void Insert(cSymbol *sym)
+{
+    symbolTable_t &currentScope = scopes.back();
+    currentScope.insert({sym->GetName(), sym);
+}
