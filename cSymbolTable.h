@@ -4,7 +4,13 @@
 // described functionality
 //
 
+#pragma once
+#include <string>
 #include "cSymbol.h"
+#include <unordered_map>
+#include <vector>
+
+using std::string;
 
 // NOTE: The following typedef will have to be replaced by something meaningful
 typedef std::unordered_map<std::string, cSymbol*> symbolTable_t;

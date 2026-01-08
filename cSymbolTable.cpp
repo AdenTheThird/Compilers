@@ -6,6 +6,12 @@
 
 #include "cSymbolTable.h"
 #include "cSymbol.h"
+#include <unordered_map>
+#include <vector>
+#include <string>
+#include <iostream>
+
+using namespace std;
 
 // Creates new empty symbol table
 cSymbolTable::cSymbolTable()
@@ -15,14 +21,14 @@ cSymbolTable::cSymbolTable()
 
 // Adds a new scope and returns pointer 
 // to that scope
-symbolTable_t *increaseScope()
+symbolTable_t* cSymbolTable::IncreaseScope()
 {
     scopes.push_back(symbolTable_t{});
     return &scopes.back();
 }
 
 // Pops the outermost scope.
-symbolTable_t *decreaseScope()
+symbolTable_t* cSymbolTable::DecreaseScope()
 {
     if(scopes.size() > 1)
     {
@@ -37,14 +43,14 @@ symbolTable_t *decreaseScope()
 }
 
 // Inserts new symbol into the current scope
-void Insert(cSymbol *sym)
+void cSymbolTable::Insert(cSymbol *sym)
 {
     symbolTable_t &currentScope = scopes.back();
-    currentScope.insert({sym->GetName(), sym);
+    currentScope.insert({sym->GetName(), sym});
 }
 
 // Finds a value given a name across all scopes.
-cSymbol *Find(string name)
+cSymbol* cSymbolTable::Find(string name)
 {
     for (int i = scopes.size() - 1; i >= 0; i--)
     {
@@ -58,7 +64,7 @@ cSymbol *Find(string name)
 }
 
 // Finds a value given a name in the current scope only.
-cSymbol *FindLocal(string name)
+cSymbol* cSymbolTable::FindLocal(string name)
 {
     auto it = scopes.back().find(name);
     if (it != scopes.back().end())
