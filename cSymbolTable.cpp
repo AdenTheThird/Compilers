@@ -11,6 +11,24 @@ cSymbolTable::cSymbolTable()
     scopes.push_back(symbolTable_t{});
 }
 
+symbolTable_t *increaseScope()
+{
+    scopes.push_back(symbolTable_t{});
+    return &scopes.back();
+}
 
+symbolTable_t *decreaseScope()
+{
+    if(scopes.size() > 1)
+    {
+        scopes.pop_back();
+    }
+    else
+    {
+        std::cout << "Warning: Outermost scope reached." << std::endl;
+    }
+
+    return &scopes.back();
+}
 
 
