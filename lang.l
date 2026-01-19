@@ -2,21 +2,28 @@
 //**************************************
 // lang.l
 //
-// Scanner definition file
-//
-// Author: Phil Howard 
-// phil.howard@oit.edu
+// Scanner definition file for CST320 Lab 2
+// Author: Aden Ratliff
 //
 
-// Illustration showing how to use {} to control scope
-// NOTE: this is pseudo-code illustrating how you can adapt your current lang.l
-
-#include "cSymbol.h"
-#include "cSymbolTable.h"
 #include "lex.h"
 #include "tokens.h"
+#include "cSymbolTable.h"
+#include "cSymbol.h"
 
-static int ProcessID();
+// Debug output macro
+//#define DEBUG_OUTPUT
+#ifdef DEBUG_OUTPUT
+    #define DO_RETURN(a) { return Return(a); }
+#else
+    #define DO_RETURN(a) { return (a); }
+#endif
+
+int Return(int val);
+
+int IncreaseScope();
+int DecreaseScope();
+static int ProcessIdentifier(const char* text);
 %}
 
 %option noyywrap
@@ -24,48 +31,86 @@ static int ProcessID();
 %option nounput
 %option yylineno
 
-    /* definitions go here. whitespace is an example. */
-whitespace      '[\t\n\r ]'
-
-%%
-{whitespace}+               {} /* Ignore whitespace */
-;                           {} /* Ignore semicolons */
-    /* control scope with curly braces
-     NOTE: This functionality will eventually move to the parser
-    */
-"{"                         return OPEN;
-"}"                         return CLOSE;
-LOCAL                       return LOCAL;
-GLOBAL                      return GLOBAL;
-LOOKUP                      return LOOKUP;
-INSERT                      return INSERT;
-[a-z]+                      {
-                                return ProcessID();
-                            }
-
 %%
 
-//******************************************************
-// ProcessID: create symbols in symbol table
-static int ProcessID()
+"("     { DO_RETURN('('); }
+")"     { DO_RETURN(')'); }
+"{"     { IncreaseScope(); DO_RETURN('{'); }
+"}"     { DecreaseScope(); DO_RETURN('}'); }
+"["     { DO_RETURN('['); }
+"]"     { DO_RETURN(']'); }
+";"     { DO_RETURN(';'); }
+","     { DO_RETURN(','); }
+"."     { DO_RETURN('.'); }
+"+"     { DO_RETURN('+'); }
+"-"     { DO_RETURN('-'); }
+"*"     { DO_RETURN('*'); }
+"/"     { DO_RETURN('/'); }
+"%"     { DO_RETURN('%'); }
+"="     { DO_RETURN('='); }
+">"     { DO_RETURN('>'); }
+"<"     { DO_RETURN('<'); }
+
+"!="    { DO_RETURN(NOT_EQUALS); }
+"=="    { DO_RETURN(EQUALS); }
+"&&"    { DO_RETURN(AND); }
+"||"    { DO_RETURN(OR); }
+">="    { DO_RETURN(GE); }
+"<="    { DO_RETURN(LE); }
+
+"program"  { DO_RETURN(PROGRAM); }
+"if"       { DO_RETURN(IF); }
+"else"     { DO_RETURN(ELSE); }
+"endif"    { DO_RETURN(ENDIF); }
+"while"    { DO_RETURN(WHILE); }
+"print"    { DO_RETURN(PRINT); }
+"prints"   { DO_RETURN(PRINTS); }
+"char"     { DO_RETURN(CHAR); }
+"int"      { DO_RETURN(INT); }
+"long"     { DO_RETURN(LONG); }
+"float"    { DO_RETURN(FLOAT); }
+"double"   { DO_RETURN(DOUBLE); }
+"struct"   { DO_RETURN(STRUCT); }
+"array"    { DO_RETURN(ARRAY); }
+"return"   { DO_RETURN(RETURN); }
+
+[_a-zA-Z][_a-zA-Z0-9]*  { DO_RETURN(ProcessIdentifier(yytext)); }
+[0-9]+\.[0-9]+         { DO_RETURN(FLOAT_VAL); }
+[0-9]+                 { DO_RETURN(INT_VAL); }
+\"[^\"]*\"             { DO_RETURN(STRING_LIT); }
+
+[ \t\r\n]+             ; 
+"//".*                 ; 
+
+.         { DO_RETURN(JUNK_TOKEN); }
+%%
+
+int Return(int val)
 {
-    string name(yytext);
-    cSymbol *sym;
+    printf("Scanned '%s': %d\n", yytext, val);
+    return val;
+}
 
-    if (g_insert)
+static int ProcessIdentifier(const char* text)
+{
+    cSymbol* symbol = g_symbolTable.FindLocal(text);
+    if(!symbol)
     {
-        sym = g_symbolTable.FindLocal(name);
-        if (sym == nullptr)
-        {
-            sym = new cSymbol(name);
-            g_symbolTable.Insert(sym);
-        }
+        symbol = new cSymbol(text);
+        g_symbolTable.Insert(symbol);
     }
-    else
-    {
-        sym = new cSymbol(name);
-    }
-    yylval.symbol = sym;
-
+    yylval.symbol = symbol;
     return IDENTIFIER;
+}
+
+int IncreaseScope()
+{
+    g_symbolTable.IncreaseScope(); 
+    return '{';
+}
+
+int DecreaseScope()
+{
+    g_symbolTable.DecreaseScope(); 
+    return '}';
 }
