@@ -13,6 +13,8 @@
 
 using namespace std;
 
+cSymbolTable g_symbolTable;
+
 // Creates new empty symbol table
 cSymbolTable::cSymbolTable()
 {

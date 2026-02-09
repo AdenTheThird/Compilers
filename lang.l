@@ -6,10 +6,10 @@
 // Author: Aden Ratliff
 //
 
-#include "lex.h"
-#include "tokens.h"
+#include "langparse.h"
 #include "cSymbolTable.h"
 #include "cSymbol.h"
+#include "astnodes.h"
 
 // Debug output macro
 //#define DEBUG_OUTPUT
@@ -21,9 +21,6 @@
 
 int Return(int val);
 
-int IncreaseScope();
-int DecreaseScope();
-static int ProcessIdentifier(const char* text);
 %}
 
 %option noyywrap
@@ -35,8 +32,8 @@ static int ProcessIdentifier(const char* text);
 
 "("     { DO_RETURN('('); }
 ")"     { DO_RETURN(')'); }
-"{"     { IncreaseScope(); DO_RETURN('{'); }
-"}"     { DecreaseScope(); DO_RETURN('}'); }
+"{"     { DO_RETURN('{'); }
+"}"     { DO_RETURN('}'); }
 "["     { DO_RETURN('['); }
 "]"     { DO_RETURN(']'); }
 ";"     { DO_RETURN(';'); }
@@ -65,19 +62,36 @@ static int ProcessIdentifier(const char* text);
 "while"    { DO_RETURN(WHILE); }
 "print"    { DO_RETURN(PRINT); }
 "prints"   { DO_RETURN(PRINTS); }
-"char"     { DO_RETURN(CHAR); }
-"int"      { DO_RETURN(INT); }
-"long"     { DO_RETURN(LONG); }
-"float"    { DO_RETURN(FLOAT); }
-"double"   { DO_RETURN(DOUBLE); }
+"char"     { yylval.symbol = g_symbolTable.Find("char"); return TYPE_ID; }
+"int"      { yylval.symbol = g_symbolTable.Find("int"); return TYPE_ID; }
+"float"    { yylval.symbol = g_symbolTable.Find("float"); return TYPE_ID; }
+"long"     { yylval.symbol = g_symbolTable.Find("long"); return TYPE_ID; }
+"double"   { yylval.symbol = g_symbolTable.Find("double"); return TYPE_ID; }
 "struct"   { DO_RETURN(STRUCT); }
 "array"    { DO_RETURN(ARRAY); }
 "return"   { DO_RETURN(RETURN); }
 
-[_a-zA-Z][_a-zA-Z0-9]*  { DO_RETURN(ProcessIdentifier(yytext)); }
-[0-9]+\.[0-9]+         { DO_RETURN(FLOAT_VAL); }
-[0-9]+                 { DO_RETURN(INT_VAL); }
-\"[^\"]*\"             { DO_RETURN(STRING_LIT); }
+[_a-zA-Z][_a-zA-Z0-9]*  {
+    std::string* id = new std::string(yytext);
+    cSymbol* c = g_symbolTable.Find(*id);
+
+    if(c && c->isType()) {
+        yylval.symbol = c; 
+        delete id;        
+        return TYPE_ID;
+    } else {
+        yylval.str_val = id; 
+        return IDENTIFIER;
+    }
+}
+
+[0-9]+\.[0-9]+         { yylval.float_val = atof(yytext);
+                         DO_RETURN(FLOAT_VAL); }
+[0-9]+                 { yylval.int_val = atoi(yytext);
+                         DO_RETURN(INT_VAL); }
+\"[^\"]*\"             { yylval.str_val = new std::string(yytext + 1, yyleng - 2);
+                         
+                         return STRING_LIT;}
 
 [ \t\r\n]+             ; 
 "//".*                 ; 
@@ -91,26 +105,4 @@ int Return(int val)
     return val;
 }
 
-static int ProcessIdentifier(const char* text)
-{
-    cSymbol* symbol = g_symbolTable.FindLocal(text);
-    if(!symbol)
-    {
-        symbol = new cSymbol(text);
-        g_symbolTable.Insert(symbol);
-    }
-    yylval.symbol = symbol;
-    return IDENTIFIER;
-}
 
-int IncreaseScope()
-{
-    g_symbolTable.IncreaseScope(); 
-    return '{';
-}
-
-int DecreaseScope()
-{
-    g_symbolTable.DecreaseScope(); 
-    return '}';
-}

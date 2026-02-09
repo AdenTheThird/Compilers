@@ -38,7 +38,7 @@ class cSymbolTable
 
         // insert a symbol into the table
         // Assumes the symbol is not already in the table
-        void Insert(cSymbol *sym);
+        void Insert(cSymbol *s);
 
         // Do a lookup in the nested table. 
         // NOTE: This starts at the inner-most scope and works its way out until
@@ -52,6 +52,7 @@ class cSymbolTable
         // NOTE: This ONLY searches the inner-most scope.
         // Returns nullptr if the symbol is not found.
         cSymbol *FindLocal(string name);
+        
 };
 
 // declare the global symbol table. The definition will have to be in a cpp file

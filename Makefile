@@ -1,38 +1,52 @@
-#**************************************
-# Makefile
-#
-# Makefile for lang compiler
-#
-# Author: Phil Howard 
-# phil.howard@oit.edu
-#
-# Date: Jan. 12, 2016
-#
+##**************************************
+## Makefile
+##
+## Build routine for lang compiler
+##
+## Author: Phil Howard 
+## phil.howard@oit.edu
+##
+## Date: Jan. 18, 2015
+##
 
-COPTS=-Wall -g -O0 -std=c++11
-
-OBJS=main.o langlex.o cSymbolTable.o
+COPTS=-Wall -g -c  -O0 -std=c++11
+OBJS=main.o \
+	 langlex.o \
+	 langparse.o \
+	 cSymbolTable.o \
+	 cVisitor.o
 
 all: lang
 
 clean:
-	rm -f $(OBJS) langlex.c lang out.xml out2.xml
-
-langlex.c: lang.l
-	flex -o langlex.c lang.l  # or flex -+ -o langlex.c lang.l for C++
-
-.c.o:
-	g++ $(COPTS) -c $< -o $@
+	rm -f $(OBJS)
+	rm -f langlex.c
+	rm -f langparse.c
+	rm -f langparse.h
+	rm -f lang
+	rm -f out.xml
+	rm -f out2.xml
 
 .cpp.o:
-	g++ $(COPTS) -c $< -o $@
+	g++ $(COPTS) $? -o $@
+
+.c.o:
+	g++ $(COPTS) $? -o $@
+
+main.o: main.cpp langparse.c langlex.c
+	g++ $(COPTS) main.cpp -o $@
 
 langlex.o: langlex.c
-	g++ $(COPTS) -c $< -o $@
+	g++ $(COPTS) -Wno-sign-compare $? -o $@
 
-main.o: main.cpp langlex.c
-	g++ $(COPTS) -c main.cpp -o main.o
+langlex.c: lang.l langparse.h
+	flex -o langlex.c lang.l
+
+langparse.c: lang.y
+	bison --defines=langparse.h lang.y -o langparse.c
 
 lang: $(OBJS)
 	g++ $(OBJS) -o lang
 
+cSymbolTable.o: cSymbolTable.cpp
+	g++ $(COPTS) cSymbolTable.cpp -o cSymbolTable.o
