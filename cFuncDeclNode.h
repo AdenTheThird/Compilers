@@ -41,5 +41,12 @@ class cFuncDeclNode : public cDeclNode
         }
 
         virtual string NodeType() { return string("func"); }
+        virtual bool IsFunc() override { return true; }
         virtual void Visit(cVisitor *visitor) { visitor->Visit(this); }
+        virtual cDeclNode* GetType() override {
+            return this;
+        }
+        virtual cDeclNode* GetDecl() {
+            return this;
+        }
 };

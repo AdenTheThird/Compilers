@@ -72,18 +72,22 @@ int Return(int val);
 "return"   { DO_RETURN(RETURN); }
 
 [_a-zA-Z][_a-zA-Z0-9]*  {
-    std::string* id = new std::string(yytext);
-    cSymbol* c = g_symbolTable.Find(*id);
+    cSymbol* sym = g_symbolTable.Find(yytext);
 
-    if(c && c->isType()) {
-        yylval.symbol = c; 
-        delete id;        
+    if (sym != nullptr && sym->GetDecl() != nullptr && sym->GetDecl()->IsType()) {
+        yylval.symbol = sym;
         return TYPE_ID;
-    } else {
-        yylval.str_val = id; 
-        return IDENTIFIER;
     }
+
+    if (!sym) {
+        sym = new cSymbol(yytext);
+        g_symbolTable.Insert(sym); 
+    }
+
+    yylval.symbol = sym;
+    return IDENTIFIER;
 }
+
 
 [0-9]+\.[0-9]+         { yylval.float_val = atof(yytext);
                          DO_RETURN(FLOAT_VAL); }

@@ -18,8 +18,7 @@
 
 // define global variables
 //cSymbolTable g_SymbolTable;
-long long cSymbol::nextId;
-
+long long cSymbol::nextId = 0;
 // takes two string args: input_file, and output_file
 int main(int argc, char **argv)
 {
@@ -58,12 +57,26 @@ int main(int argc, char **argv)
             exit(-1);
         }
     }
+    cSymbol* symChar = new cSymbol("char");
+    symChar->SetInstance(new cBaseTypeNode("char", 1, false));
+    g_symbolTable.Insert(symChar);
 
-    g_symbolTable.Insert(new cSymbol("char"));
-    g_symbolTable.Insert(new cSymbol("int"));
-    g_symbolTable.Insert(new cSymbol("float"));
-    g_symbolTable.Insert(new cSymbol("long"));
-    g_symbolTable.Insert(new cSymbol("double"));
+    cSymbol* symInt = new cSymbol("int");
+    symInt->SetInstance(new cBaseTypeNode("int", 4, false));
+    g_symbolTable.Insert(symInt);
+
+    cSymbol* symFloat = new cSymbol("float");
+    symFloat->SetInstance(new cBaseTypeNode("float", 4, true));
+    g_symbolTable.Insert(symFloat);
+
+    cSymbol* symLong = new cSymbol("long");
+    symLong->SetInstance(new cBaseTypeNode("long", 8, false));
+    g_symbolTable.Insert(symLong);
+
+
+    cSymbol* symDouble = new cSymbol("double");
+    symDouble->SetInstance(new cBaseTypeNode("double", 8, true));
+    g_symbolTable.Insert(symDouble);
 
     result = yyparse();
     if (yyast_root != nullptr)

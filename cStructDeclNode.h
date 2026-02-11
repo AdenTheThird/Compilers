@@ -23,4 +23,12 @@ class cStructDeclNode : public cDeclNode
 
     virtual string NodeType() { return string("struct_decl"); }
     virtual void Visit(cVisitor *visitor) { visitor->Visit(this); }
+    virtual bool IsStruct() override { return true; }
+    virtual bool IsType() override { return true; }
+    virtual cDeclNode* GetType() override {
+        return this;
+    }
+    virtual cDeclNode* GetDecl() {
+        return this;
+    }
 };

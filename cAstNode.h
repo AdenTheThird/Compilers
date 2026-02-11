@@ -18,6 +18,10 @@ using std::vector;
 
 #include "cVisitor.h"
 
+extern bool g_semanticErrorHappened;
+#define CHECK_ERROR() { if (g_semanticErrorHappened) { g_semanticErrorHappened = false; } }
+#define PROP_ERROR()  { if (g_semanticErrorHappened) { g_semanticErrorHappened = false; YYERROR; } }
+
 // The following are defined in lex.h, but can't include due to circularity
 extern int yylineno;        // Need to be able to store line numbers
 extern int yynerrs;         // Increment on each semantic error

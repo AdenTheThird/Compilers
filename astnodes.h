@@ -12,6 +12,7 @@
 //
 
 #include "cAstNode.h"
+#include "cBaseTypeNode.h"
 #include "cBinaryExprNode.h"
 #include "cSymbol.h"
 #include "cStmtNode.h"

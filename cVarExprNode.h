@@ -31,6 +31,17 @@ class cVarExprNode : public cExprNode
 
     virtual string NodeType() { return string("varref"); } 
     virtual void Visit(cVisitor *visitor) { visitor->Visit(this); } 
+    virtual cDeclNode* GetDecl() 
+    {
+        cSymbol* s = dynamic_cast<cSymbol*>(GetChild(0));
+        return s ? s->GetDecl() : nullptr;
+    }
+
+    virtual cDeclNode* GetType() override
+    {
+        cDeclNode* decl = GetDecl();
+        return decl ? decl->GetType() : nullptr;
+    }
 
     protected:
     std::vector<cExprNode*> indices;

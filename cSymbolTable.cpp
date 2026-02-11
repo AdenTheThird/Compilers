@@ -48,6 +48,10 @@ symbolTable_t* cSymbolTable::DecreaseScope()
 void cSymbolTable::Insert(cSymbol *sym)
 {
     symbolTable_t &currentScope = scopes.back();
+    if (currentScope.find(sym->GetName()) != currentScope.end())
+    {
+        return;
+    }
     currentScope.insert({sym->GetName(), sym});
 }
 

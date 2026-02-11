@@ -31,6 +31,14 @@ class cArrayDeclNode : public cDeclNode
     virtual string NodeType() { return string("array_decl"); }
     virtual void Visit(cVisitor *visitor) { visitor->Visit(this); }
 
+
+    virtual bool IsArray() override { return true; }
+    virtual bool IsType() override { return true; }
+    virtual cDeclNode* GetType() {
+        return this;
+    }
+
+
     protected: 
     std::string m_size;
 };
