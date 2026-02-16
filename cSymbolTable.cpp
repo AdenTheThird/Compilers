@@ -27,6 +27,7 @@ symbolTable_t* cSymbolTable::IncreaseScope()
 {
     scopes.push_back(symbolTable_t{});
     return &scopes.back();
+    //std::cout << "INCREASED SCOPE\n";
 }
 
 // Pops the outermost scope.
@@ -41,6 +42,7 @@ symbolTable_t* cSymbolTable::DecreaseScope()
         std::cout << "Warning: Outermost scope reached." << std::endl;
     }
 
+    //std::cout << "DECREASED SCOPE\n";
     return &scopes.back();
 }
 
@@ -52,6 +54,7 @@ void cSymbolTable::Insert(cSymbol *sym)
     {
         return;
     }
+    //std::cout << "Inserted symbol " << sym->GetName() << " into current scope\n";
     currentScope.insert({sym->GetName(), sym});
 }
 

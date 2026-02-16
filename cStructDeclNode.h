@@ -17,6 +17,15 @@ class cStructDeclNode : public cDeclNode
 
         cStructDeclNode(cDeclsNode* decls, cSymbol* s)
         {
+            if (g_symbolTable.FindLocal(s->GetName()))
+            {
+                SemanticParseError("Symbol " + s->GetName() + " already defined in current scope");
+            }
+            else
+            {
+                g_symbolTable.Insert(s);
+                s->SetDecl(this);
+            }
             AddChild(decls);
             AddChild(s);
         }

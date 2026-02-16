@@ -20,6 +20,7 @@
 #endif
 
 int Return(int val);
+int ProcessIdentifier(const char* text);
 
 %}
 
@@ -71,22 +72,17 @@ int Return(int val);
 "array"    { DO_RETURN(ARRAY); }
 "return"   { DO_RETURN(RETURN); }
 
-[_a-zA-Z][_a-zA-Z0-9]*  {
-    cSymbol* sym = g_symbolTable.Find(yytext);
+[_a-zA-Z][_a-zA-Z0-9]*  { 
+                            cSymbol* s = g_symbolTable.Find(yytext);
+                            if (s && s->GetDecl() && s->GetDecl()->IsType())
+                            {
+                               yylval.symbol = s;
+                               return TYPE_ID;
+                            }
 
-    if (sym != nullptr && sym->GetDecl() != nullptr && sym->GetDecl()->IsType()) {
-        yylval.symbol = sym;
-        return TYPE_ID;
-    }
-
-    if (!sym) {
-        sym = new cSymbol(yytext);
-        g_symbolTable.Insert(sym); 
-    }
-
-    yylval.symbol = sym;
-    return IDENTIFIER;
-}
+                            yylval.str_val = new std::string(yytext);
+                            return IDENTIFIER;
+                        }
 
 
 [0-9]+\.[0-9]+         { yylval.float_val = atof(yytext);

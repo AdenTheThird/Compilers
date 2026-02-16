@@ -14,6 +14,7 @@ class cVarExprNode : public cExprNode
 { 
     public: cVarExprNode(cSymbol* s) 
             {
+
                 AddChild(s);
             } 
 

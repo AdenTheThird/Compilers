@@ -15,7 +15,11 @@ class cVarDeclNode : public cDeclNode
     public:
         cVarDeclNode(cSymbol* s1, cSymbol* s2)
         {
-
+            if (g_symbolTable.FindLocal(s2->GetName()))
+            {
+                SemanticParseError("Symbol " + s2->GetName() + " already defined in current scope");
+            }
+            g_symbolTable.Insert(s2);
             AddChild(s1);
             AddChild(s2);
         }

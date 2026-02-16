@@ -18,6 +18,15 @@ class cArrayDeclNode : public cDeclNode
 
         cArrayDeclNode(cSymbol* type, int size, cSymbol* name)
         {
+            if (g_symbolTable.FindLocal(name->GetName()))
+            {
+                SemanticParseError("Symbol " + name->GetName() + " already defined in current scope");
+            }
+            else
+            {
+                g_symbolTable.Insert(name);
+                name->SetDecl(this);
+            }
             m_size = std::to_string(size);
             AddChild(type);
             AddChild(name);

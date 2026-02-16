@@ -18,15 +18,12 @@ int yyerror(const char* msg);
 bool g_semanticErrorHappened = false;
 cAstNode* yyast_root;
 
-#define CHECK_ERROR() { if (g_semanticErrorHappened) { g_semanticErrorHappened = false; } }
-#define PROP_ERROR() { if (g_semanticErrorHappened) { g_semanticErrorHappened = false; YYERROR; } }
 %}
 
 %locations
 %code requires {
     #include <string>
 
-    class cBaseClassNode;
     class cReturnNode;
     class cAstNode;
     class cBinaryExprNode;
@@ -74,14 +71,13 @@ cAstNode* yyast_root;
     cDeclsNode*     decls_node;
     cSymbol*        symbol;
     cVarExprNode*   var_expr_node;
-    char*           symbolName;
     struct sFuncHeader*    func_header_info;
     cParamsNode*    params_node;
     }
 
 %start  program
 
-%token <symbol>    IDENTIFIER
+%token <str_val>    IDENTIFIER
 %token <symbol>    TYPE_ID
 %token <int_val>   CHAR_VAL
 %token <int_val>   INT_VAL
@@ -168,42 +164,52 @@ decl:       var_decl ';'
         |   struct_decl ';'
                             { $$ = $1;  }
         |   func_decl
-                            {  }
+                            { $$ = $1; }
         |   error ';'
                             {  }
 
 var_decl:   TYPE_ID IDENTIFIER
-                                 {
-                                    cSymbol* typeSym = g_symbolTable.Find($1->GetName());
-                                    cSymbol* idSym = g_symbolTable.FindLocal($2->GetName());
-                                    if (!idSym)
-                                    { 
-                                        idSym = new cSymbol($2->GetName());
-                                        g_symbolTable.Insert(idSym);
+                                    {
+    cSymbol* typeSim = $1;
+    std::string varName = *$2;
 
+    cSymbol* idSym = g_symbolTable.FindLocal(varName);
+    if (!idSym)
+    {
+        idSym = new cSymbol(varName);
+    }
+
+    $$ = new cVarDeclNode(typeSim, idSym);
                                     }
-                                    $$ = new cVarDeclNode(typeSym, idSym);
-                                }
                                            
-struct_decl:  STRUCT open decls close IDENTIFIER 
-                                { 
-                                    cSymbol* typeSym = $5;
-                                    cStructDeclNode* decl = new cStructDeclNode($3, typeSym);
-                                    typeSym->SetDecl(decl);
-                                    
+struct_decl: STRUCT open decls close IDENTIFIER
+{
+    std::string name = *$5;
 
-                                    g_symbolTable.Insert(typeSym);
-                                    $$ = decl;
-                                    }
-                
+    cSymbol* sym = g_symbolTable.FindLocal(name);
+    if (!sym)
+    {
+        sym = new cSymbol(name);
+    }
 
-array_decl:   ARRAY TYPE_ID '[' INT_VAL ']' IDENTIFIER
-                                { cSymbol* c = $6;
-                                cArrayDeclNode* decl  = new cArrayDeclNode($2, $4, c);
-                                c->SetDecl(decl);
-                                g_symbolTable.Insert(c);
-                                $$ = decl;
-                                }
+    $$ = new cStructDeclNode($3, sym);
+
+}
+
+array_decl: ARRAY TYPE_ID '[' INT_VAL ']' IDENTIFIER
+{
+    std::string name = *$6;
+
+    cSymbol* sym = g_symbolTable.FindLocal(name);
+    if (!sym)
+    {
+        sym = new cSymbol(name);
+    }
+
+    $$ = new cArrayDeclNode($2, $4, sym);
+
+}
+
 
 func_decl:  func_header ';'
                                 { 
@@ -226,7 +232,7 @@ func_prefix: TYPE_ID IDENTIFIER '('
                                 {
                                   sFuncHeader* s = new sFuncHeader;
                                   s->type = $1;
-                                  s->name = $2;
+                                  s->name = g_symbolTable.FindLocal(*$2);
                                   if(!s->name)
                                   {
                                       s->name = new cSymbol(*$2);
@@ -276,27 +282,30 @@ stmt:       IF '(' expr ')' stmts ENDIF ';'
                             {}
 
 func_call:  IDENTIFIER '(' params ')'
-                            { cSymbol* c = $1;
+                            { cSymbol* c = g_symbolTable.Find(*$1);
                               if(!c)
                                 {
                                     yyerror("Call to undeclared function!\n");
                                 }
                               $$ = new cFuncExprNode(c, $3); } 
         |   IDENTIFIER '(' ')'
-                            { cSymbol* c = $1;
+                            { cSymbol* c = g_symbolTable.Find(*$1);
                               if(!c)
                                 {
                                     yyerror("Call to undeclared function!\n");
                                 }
                               $$ = new cFuncExprNode(); } 
+
 varref:   varref '.' IDENTIFIER
                             {
-                            cSymbol* s = $3;
+                            cSymbol* s = g_symbolTable.Find(*$3);
                             if(!s)
                             {
+                                s = new cSymbol(*$3);
                             }
-                                $1->Insert(s);                  
-                                $$ = $1;                                
+
+                            $1->Insert(s);                  
+                            $$ = $1;                                
                             }
         | varref '[' expr ']'
                             {  
@@ -306,14 +315,22 @@ varref:   varref '.' IDENTIFIER
                               
 
         | varpart       
-                            { $$ = $1; }
+                            { $$ =$1; }
 
-varpart:  IDENTIFIER
-                                {
-                                    cSymbol* sym = g_symbolTable.Find($1->GetName());
-                                    $$ = new cVarExprNode(sym);
-                                }
 
+varpart: IDENTIFIER
+{
+                                    cSymbol* c = g_symbolTable.Find(*$1);
+                                    if(!c)
+                                    {
+                                        SemanticParseError("Symbol " + *$1 + " not defined");
+                                        PROP_ERROR();
+                                        c = new cSymbol(*$1);
+                                    }
+                                    
+                                    $$ = new cVarExprNode(c);
+                                        
+}
 lval:     varref
                                 { $$ = $1; }
 
@@ -359,7 +376,7 @@ fact:       '(' expr ')'
         |   INT_VAL
                              { $$ = new cIntExprNode($1); }
         |   FLOAT_VAL
-                            { $$ = new cFloatExprNode($1); }
+                            { $$ = new cFloatExprNode($1);  }
         |   varref
                             {  }
         |   func_call
@@ -384,4 +401,3 @@ void SemanticParseError(std::string error)
     g_semanticErrorHappened = true;
     yynerrs++;
 }
-
