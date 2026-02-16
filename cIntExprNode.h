@@ -37,12 +37,12 @@ class cIntExprNode : public cExprNode
             if (m_value >= 0 && m_value <= 127)
             {
                 cSymbol* s = g_symbolTable.Find("char");
-                return s->GetDecl()->GetType();
+                return s->GetDecl();
             }
             else
             {
                 cSymbol* s = g_symbolTable.Find("int");
-                return s->GetDecl()->GetType();
+                return s->GetDecl();
             }
         }
                 

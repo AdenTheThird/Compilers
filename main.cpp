@@ -58,24 +58,24 @@ int main(int argc, char **argv)
         }
     }
     cSymbol* symChar = new cSymbol("char");
-    symChar->SetInstance(new cBaseTypeNode("char", 1, false));
+    symChar->SetDecl(new cBaseTypeNode("char", 1, false));
     g_symbolTable.Insert(symChar);
 
     cSymbol* symInt = new cSymbol("int");
-    symInt->SetInstance(new cBaseTypeNode("int", 4, false));
+    symInt->SetDecl(new cBaseTypeNode("int", 4, false));
     g_symbolTable.Insert(symInt);
 
     cSymbol* symFloat = new cSymbol("float");
-    symFloat->SetInstance(new cBaseTypeNode("float", 4, true));
+    symFloat->SetDecl(new cBaseTypeNode("float", 4, true));
     g_symbolTable.Insert(symFloat);
 
     cSymbol* symLong = new cSymbol("long");
-    symLong->SetInstance(new cBaseTypeNode("long", 8, false));
+    symLong->SetDecl(new cBaseTypeNode("long", 8, false));
     g_symbolTable.Insert(symLong);
 
 
     cSymbol* symDouble = new cSymbol("double");
-    symDouble->SetInstance(new cBaseTypeNode("double", 8, true));
+    symDouble->SetDecl(new cBaseTypeNode("double", 8, true));
     g_symbolTable.Insert(symDouble);
 
     result = yyparse();

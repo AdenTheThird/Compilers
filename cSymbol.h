@@ -18,7 +18,7 @@ class cSymbol : public cAstNode
         {
             m_id = ++nextId;
             m_name = name;
-            m_instance = nullptr;
+            m_decl = nullptr;
             //std::cout << "\n" << m_id << " " << m_name << "\n";
         }
 
@@ -33,17 +33,12 @@ class cSymbol : public cAstNode
 
         cDeclNode* GetDecl()
         {
-            return m_instance;
+            return m_decl;
         }
 
-        void SetDecl(cDeclNode* instance)
+        void SetDecl(cDeclNode* decl)
         {
-            m_instance = instance;
-        }
-
-        void SetInstance(cDeclNode* instance)
-        {
-            m_instance = instance;
+            m_decl = decl;
         }
 
         static int GetNextSymbolId()
@@ -56,6 +51,6 @@ class cSymbol : public cAstNode
     protected:
         static long long nextId;    // keeps track of unique symbol I
         long long m_id;             // Unique ID for this symbol
-        cDeclNode* m_instance;
+        cDeclNode* m_decl;
         string m_name;              // Symbol name
 };

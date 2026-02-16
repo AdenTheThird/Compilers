@@ -18,6 +18,8 @@ int yyerror(const char* msg);
 bool g_semanticErrorHappened = false;
 cAstNode* yyast_root;
 
+#define CHECK_ERROR() { if (g_semanticErrorHappened) { g_semanticErrorHappened = false; } }
+#define PROP_ERROR() { if (g_semanticErrorHappened) { g_semanticErrorHappened = false; YYERROR; } }
 %}
 
 %locations
@@ -198,7 +200,7 @@ struct_decl:  STRUCT open decls close IDENTIFIER
 array_decl:   ARRAY TYPE_ID '[' INT_VAL ']' IDENTIFIER
                                 { cSymbol* c = $6;
                                 cArrayDeclNode* decl  = new cArrayDeclNode($2, $4, c);
-                                c->SetInstance(decl);
+                                c->SetDecl(decl);
                                 g_symbolTable.Insert(c);
                                 $$ = decl;
                                 }
@@ -382,3 +384,4 @@ void SemanticParseError(std::string error)
     g_semanticErrorHappened = true;
     yynerrs++;
 }
+
