@@ -27,6 +27,10 @@ public:
             cFuncDeclNode* existingFunc = dynamic_cast<cFuncDeclNode*>(existing->GetDecl());
             if (existingFunc)
             {
+                if(m_stmts && existingFunc->GetStmts() != nullptr)
+                {
+                    SemanticParseError(existing->GetName() + " already has a definition");
+                }
                 if(!existingFunc->IsFunc())
                 {
                     SemanticParseError("Symbol " + existing->GetName() + " already defined in current scope");
@@ -64,6 +68,10 @@ public:
             cFuncDeclNode* existingFunc = dynamic_cast<cFuncDeclNode*>(existing->GetDecl());
             if (existingFunc)
             {
+                if(m_stmts && existingFunc->GetStmts() != nullptr)
+                {
+                    SemanticParseError(existing->GetName() + " already has a definition");
+                }
                 if(!existingFunc->IsFunc())
                 {
                     SemanticParseError("Symbol " + existing->GetName() + " already defined in current scope");
@@ -101,6 +109,10 @@ public:
             cFuncDeclNode* existingFunc = dynamic_cast<cFuncDeclNode*>(existing->GetDecl());
             if (existingFunc)
             {
+                if(m_stmts && existingFunc->GetStmts() != nullptr)
+                {
+                    SemanticParseError(existing->GetName() + " already has a definition");
+                }
                 if(!existingFunc->IsFunc())
                 {
                     SemanticParseError("Symbol " + existing->GetName() + " already defined in current scope");
