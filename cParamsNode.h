@@ -24,6 +24,10 @@ class cParamsNode : public cAstNode
             AddChild(decl);
         }
 
+        int Count()
+        {
+            return NumChildren();
+        }
     virtual string NodeType() { return string("args"); }
     virtual void Visit(cVisitor *visitor) {visitor->Visit(this); }
 

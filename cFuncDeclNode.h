@@ -61,17 +61,6 @@ public:
             {
                 SemanticParseError("Symbol " + existing->GetName() + " already defined in current scope");
             }
-            cDeclNode* typeNode = existingDecl->GetType();
-            cSymbol* typeSym = nullptr;
-            if(typeNode)
-            {
-                typeSym = existingDecl->GetTypeSymbol();
-            }
-            std::string existingType = typeSym ? typeSym->GetName() : "";
-            if(existingType != type->GetName())
-            {
-                SemanticParseError(name->GetName() + " previously declared with different return type");
-            }
             cFuncDeclNode* existingFunc = dynamic_cast<cFuncDeclNode*>(existing->GetDecl());
             if (existingFunc)
             {
@@ -109,17 +98,6 @@ public:
             {
                 SemanticParseError("Symbol " + existing->GetName() + " already defined in current scope");
             }
-            cDeclNode* typeNode = existingDecl->GetType();
-            cSymbol* typeSym = nullptr;
-            if(typeNode)
-            {
-                typeSym = existingDecl->GetTypeSymbol();
-            }
-            std::string existingType = typeSym ? typeSym->GetName() : "";
-            if(existingType != type->GetName())
-            {
-                SemanticParseError(name->GetName() + " previously declared with different return type");
-            }
             cFuncDeclNode* existingFunc = dynamic_cast<cFuncDeclNode*>(existing->GetDecl());
             if (existingFunc)
             {
@@ -154,6 +132,8 @@ public:
     virtual cDeclNode* GetDecl() { return this; }
     bool HasBody() const { return m_stmts != nullptr; }
     cStmtsNode* GetStmts() const { return m_stmts; }
+    cDeclsNode* GetDecls() const { return m_decls; }
+    cParamsNode* GetParams() const { return m_params; }
     void SetStmts(cStmtsNode* stmts) { m_stmts = stmts; }
 private:
     cSymbol* m_type;

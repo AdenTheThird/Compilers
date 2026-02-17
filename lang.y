@@ -209,32 +209,63 @@ array_decl: ARRAY TYPE_ID '[' INT_VAL ']' IDENTIFIER
     $$ = new cArrayDeclNode($2, $4, sym);
 
 }
-func_decl:  func_header ';'
+
+func_decl: func_header ';'
 {
     g_symbolTable.DecreaseScope();
     $$ = new cFuncDeclNode($1->type, $1->name, $1->params);
-    PROP_ERROR();
+    CHECK_ERROR();
 }
-|   func_header  '{' decls stmts '}'
+
+| func_header '{' decls stmts '}'
 {
     g_symbolTable.DecreaseScope();
     $$ = new cFuncDeclNode($1->type, $1->name, $1->params, $3, $4);
-    PROP_ERROR();
+    CHECK_ERROR();
+
 }
+
 |   func_header  '{' stmts '}'
 {
     g_symbolTable.DecreaseScope();
     $$ = new cFuncDeclNode($1->type, $1->name, $1->params, $3);
-    PROP_ERROR();
+    CHECK_ERROR();
 }
 ;
-
 func_header: func_prefix paramsspec ')'
-                                { $1->params = $2;
-                                  $$ = $1;  }
-        |    func_prefix ')'
-                            { $1->params = nullptr;
-                              $$ = $1;  }
+{
+    $1->params = $2;
+
+    if ($1->name)
+    {
+     cDeclNode* existingDecl = $1->name->GetDecl();
+        if (existingDecl && existingDecl->IsFunc())
+        {
+            cFuncDeclNode* existingFunc = dynamic_cast<cFuncDeclNode*>(existingDecl);
+
+            // check return type
+//            if (existingFunc->GetTypeSymbol()->GetName() != $1->type->GetName())
+ //               SemanticParseError($1->name->GetName() + " previously declared with different return type");
+
+            // check parameter count
+            int existingCount = existingFunc->GetParams() ? existingFunc->GetParams()->Count() : 0;
+            int newCount = $2 ? $2->Count() : 0;
+            if (existingCount != newCount)
+                SemanticParseError($1->name->GetName() + " redeclared with a different number of parameters");
+
+        }
+    }
+
+    $$ = $1;
+}
+
+
+| func_prefix ')'
+{
+    $1->params = nullptr;
+    CHECK_ERROR();
+    $$ = $1;
+}
 
 func_prefix: TYPE_ID IDENTIFIER '('
 {
@@ -242,14 +273,31 @@ func_prefix: TYPE_ID IDENTIFIER '('
     s->type = $1;
     s->name = g_symbolTable.Find(*$2);
 
-    if (!s->name)
+    if (s->name)
+    {
+        cDeclNode* existingDecl = s->name->GetDecl();
+        
+        if (existingDecl && existingDecl->IsFunc())
+        {
+            cFuncDeclNode* existingFunc = dynamic_cast<cFuncDeclNode*>(existingDecl);
+        
+            cSymbol* existingType = existingFunc->GetTypeSymbol();
+            if (existingType->GetName() != $1->GetName())
+            {
+                SemanticParseError(*$2 + " previously declared with different return type"); 
+            } 
+            
+        }
+    }
+    else
     {
         s->name = new cSymbol(*$2);
     }
-
+    
     s->params = nullptr;
     g_symbolTable.IncreaseScope();
     $$ = s;
+    CHECK_ERROR();
 }
 
 paramsspec:  paramsspec ',' paramspec
@@ -292,21 +340,23 @@ stmt:       IF '(' expr ')' stmts ENDIF ';'
                             {}
 
 func_call:  IDENTIFIER '(' params ')'
-                            { cSymbol* c = g_symbolTable.FindLocal(*$1);
+                            { 
+                              cSymbol* c = g_symbolTable.FindLocal(*$1);
                               if(!c)
                                 {
                                     c = new cSymbol(*$1);
                                 }
                               $$ = new cFuncExprNode(c, $3); 
-                              PROP_ERROR(); }
+                              CHECK_ERROR(); }
         |   IDENTIFIER '(' ')'
-                            { cSymbol* c = g_symbolTable.Find(*$1);
+                            { 
+                                cSymbol* c = g_symbolTable.Find(*$1);
                               if(!c)
                                 {
                                     c = new cSymbol(*$1);
                                 }
                               $$ = new cFuncExprNode(c, nullptr); 
-                              PROP_ERROR(); }
+                              CHECK_ERROR(); }
 
 varref:   varref '.' IDENTIFIER
                             {
@@ -339,7 +389,7 @@ varpart: IDENTIFIER
                                     }
                                     
                                     $$ = new cVarExprNode(c);
-                                    PROP_ERROR();
+                                    CHECK_ERROR();
                                         
 }
 lval:     varref
