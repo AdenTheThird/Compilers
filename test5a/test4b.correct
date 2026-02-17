@@ -35,7 +35,7 @@
         </decls>
         <stmts>
           <funcCall>
-            <sym id="7" name="foo"/>
+            <sym id="6" name="foo"/>
           </funcCall>
         </stmts>
       </block>

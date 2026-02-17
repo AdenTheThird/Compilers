@@ -46,6 +46,11 @@ class cSymbol : public cAstNode
             return nextId;
         }
 
+        void ForceId(int id)
+        {
+            m_id = id;
+        }
+
         virtual string NodeType() {return string("sym"); }
         virtual void Visit(cVisitor *visitor) { visitor->Visit(this); }
     protected:

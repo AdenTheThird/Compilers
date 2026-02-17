@@ -10,6 +10,7 @@
 //
 
 #include "cAstNode.h"
+#include "cSymbol.h"
 
 class cDeclNode : public cAstNode
 {
@@ -27,4 +28,8 @@ class cDeclNode : public cAstNode
         virtual int  GetSize()  { return 0; }
         virtual cDeclNode *GetType() = 0;
 
+        cSymbol* GetTypeSymbol()
+        {
+            return dynamic_cast<cSymbol*>(GetChild(0));
+        }
 };

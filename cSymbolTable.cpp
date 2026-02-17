@@ -26,8 +26,8 @@ cSymbolTable::cSymbolTable()
 symbolTable_t* cSymbolTable::IncreaseScope()
 {
     scopes.push_back(symbolTable_t{});
-    return &scopes.back();
     //std::cout << "INCREASED SCOPE\n";
+    return &scopes.back();
 }
 
 // Pops the outermost scope.

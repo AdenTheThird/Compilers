@@ -209,39 +209,49 @@ array_decl: ARRAY TYPE_ID '[' INT_VAL ']' IDENTIFIER
     $$ = new cArrayDeclNode($2, $4, sym);
 
 }
-
-
 func_decl:  func_header ';'
-                                { 
-                                $$ = new cFuncDeclNode($1->type, $1->name, $1->params);
-                                g_symbolTable.DecreaseScope(); }
-        |   func_header  '{' decls stmts '}'
-                                { 
-                                  $$ = new cFuncDeclNode($1->type, $1->name, $1->params, $3, $4); 
-                                g_symbolTable.DecreaseScope(); }
-        |   func_header  '{' stmts '}'
-                                { $$ = new cFuncDeclNode($1->type, $1->name, $1->params, $3); 
-                                g_symbolTable.DecreaseScope(); }
+{
+    g_symbolTable.DecreaseScope();
+    $$ = new cFuncDeclNode($1->type, $1->name, $1->params);
+    PROP_ERROR();
+}
+|   func_header  '{' decls stmts '}'
+{
+    g_symbolTable.DecreaseScope();
+    $$ = new cFuncDeclNode($1->type, $1->name, $1->params, $3, $4);
+    PROP_ERROR();
+}
+|   func_header  '{' stmts '}'
+{
+    g_symbolTable.DecreaseScope();
+    $$ = new cFuncDeclNode($1->type, $1->name, $1->params, $3);
+    PROP_ERROR();
+}
+;
+
 func_header: func_prefix paramsspec ')'
                                 { $1->params = $2;
                                   $$ = $1;  }
         |    func_prefix ')'
                             { $1->params = nullptr;
                               $$ = $1;  }
+
 func_prefix: TYPE_ID IDENTIFIER '('
-                                {
-                                  sFuncHeader* s = new sFuncHeader;
-                                  s->type = $1;
-                                  s->name = g_symbolTable.FindLocal(*$2);
-                                  if(!s->name)
-                                  {
-                                      s->name = new cSymbol(*$2);
-                                      g_symbolTable.Insert(s->name);
-                                  }
-                                  s->params = nullptr;
-                                  g_symbolTable.IncreaseScope();
-                                  $$ = s;
-                                }
+{
+    sFuncHeader* s = new sFuncHeader;
+    s->type = $1;
+    s->name = g_symbolTable.Find(*$2);
+
+    if (!s->name)
+    {
+        s->name = new cSymbol(*$2);
+    }
+
+    s->params = nullptr;
+    g_symbolTable.IncreaseScope();
+    $$ = s;
+}
+
 paramsspec:  paramsspec ',' paramspec
                                 { $1->Insert($3);
                                   $$ = $1; }
@@ -282,19 +292,21 @@ stmt:       IF '(' expr ')' stmts ENDIF ';'
                             {}
 
 func_call:  IDENTIFIER '(' params ')'
-                            { cSymbol* c = g_symbolTable.Find(*$1);
+                            { cSymbol* c = g_symbolTable.FindLocal(*$1);
                               if(!c)
                                 {
-                                    yyerror("Call to undeclared function!\n");
+                                    c = new cSymbol(*$1);
                                 }
-                              $$ = new cFuncExprNode(c, $3); } 
+                              $$ = new cFuncExprNode(c, $3); 
+                              PROP_ERROR(); }
         |   IDENTIFIER '(' ')'
                             { cSymbol* c = g_symbolTable.Find(*$1);
                               if(!c)
                                 {
-                                    yyerror("Call to undeclared function!\n");
+                                    c = new cSymbol(*$1);
                                 }
-                              $$ = new cFuncExprNode(); } 
+                              $$ = new cFuncExprNode(c, nullptr); 
+                              PROP_ERROR(); }
 
 varref:   varref '.' IDENTIFIER
                             {
@@ -323,12 +335,11 @@ varpart: IDENTIFIER
                                     cSymbol* c = g_symbolTable.Find(*$1);
                                     if(!c)
                                     {
-                                        SemanticParseError("Symbol " + *$1 + " not defined");
-                                        PROP_ERROR();
                                         c = new cSymbol(*$1);
                                     }
                                     
                                     $$ = new cVarExprNode(c);
+                                    PROP_ERROR();
                                         
 }
 lval:     varref

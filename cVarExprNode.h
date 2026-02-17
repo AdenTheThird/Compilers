@@ -14,7 +14,10 @@ class cVarExprNode : public cExprNode
 { 
     public: cVarExprNode(cSymbol* s) 
             {
-
+                if(!g_symbolTable.Find(s->GetName()))
+                {
+                    SemanticParseError("Symbol " + s->GetName() + " not defined");
+                }
                 AddChild(s);
             } 
 
