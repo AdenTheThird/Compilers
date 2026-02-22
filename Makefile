@@ -14,7 +14,8 @@ OBJS=main.o \
 	 langlex.o \
 	 langparse.o \
 	 cSymbolTable.o \
-	 cVisitor.o
+	 cVisitor.o \
+	 cSemantics.o
 
 all: lang
 
@@ -44,6 +45,9 @@ langlex.c: lang.l langparse.h
 
 langparse.c: lang.y
 	bison --defines=langparse.h lang.y -o langparse.c
+
+cSemantics.o: cSemantics.cpp
+	g++ $(COPTS) cSemantics.cpp -o cSemantics.o
 
 lang: $(OBJS)
 	g++ $(OBJS) -o lang

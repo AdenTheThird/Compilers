@@ -19,6 +19,7 @@ class cVarDeclNode : public cDeclNode
             {
                 SemanticParseError("Symbol " + s2->GetName() + " already defined in current scope");
             }
+            m_type = s1;
             s2->SetDecl(this);
             g_symbolTable.Insert(s2);
             AddChild(s1);
@@ -41,4 +42,8 @@ class cVarDeclNode : public cDeclNode
         {
             return this;
         }
+        string GetTypeName() override { return m_type->GetName(); }
+
+    protected:
+        cSymbol* m_type;
 };

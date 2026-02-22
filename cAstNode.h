@@ -29,6 +29,7 @@ extern int yynerrs;         // Increment on each semantic error
 // Declare the Semantic Error routine used at parse time.
 // By declaring it here, all AST node implementations have access to it.
 void SemanticParseError(std::string error);
+void PostParseError(std::string error, int line);
 
 class cAstNode
 {
@@ -36,6 +37,11 @@ class cAstNode
         //*************************************
         // Constructor
         cAstNode() : m_LineNum(yylineno), m_hasSemanticError(false) {}
+
+        int GetLine()
+        {
+            return m_LineNum;
+        }
 
     //****************************************
     // As protected, these methods are limited as to where you call them.

@@ -26,6 +26,7 @@ class cStructDeclNode : public cDeclNode
                 g_symbolTable.Insert(s);
                 s->SetDecl(this);
             }
+            m_type = s;
             AddChild(decls);
             AddChild(s);
         }
@@ -40,4 +41,8 @@ class cStructDeclNode : public cDeclNode
     virtual cDeclNode* GetDecl() {
         return this;
     }
+
+    string GetTypeName() override { return m_type->GetName(); }
+    protected:
+        cSymbol* m_type;
 };

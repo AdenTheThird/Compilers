@@ -47,6 +47,8 @@ class cBaseTypeNode : public cDeclNode
         virtual int GetSize() { return m_size; }
 
         virtual void Visit(cVisitor *visitor) { visitor->Visit(this); }
+
+        string GetTypeName() override { return m_name; }
     protected:
         string m_name;
         int    m_size;

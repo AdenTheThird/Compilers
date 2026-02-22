@@ -147,6 +147,9 @@ public:
     cDeclsNode* GetDecls() const { return m_decls; }
     cParamsNode* GetParams() const { return m_params; }
     void SetStmts(cStmtsNode* stmts) { m_stmts = stmts; }
+
+    string GetTypeName() override { return m_type->GetName(); }
+
 private:
     cSymbol* m_type;
     cSymbol* m_name;

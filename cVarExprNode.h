@@ -7,8 +7,10 @@
 // Author: Aden Ratliff
 // aden.ratliff@oit.edu
 #include "cAstNode.h"
+#include "cSymbolTable.h"
 #include "cExprNode.h"
 #include "cVarExprNode.h"
+#include "cDeclNode.h"
 
 class cVarExprNode : public cExprNode 
 { 

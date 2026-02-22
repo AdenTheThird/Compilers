@@ -462,3 +462,12 @@ void SemanticParseError(std::string error)
     g_semanticErrorHappened = true;
     yynerrs++;
 }
+
+//Function that gets called when a semantic error happens
+void PostParseError(std::string error, int line)
+{
+    std::cout << "ERROR: " << error << " near line "
+        << line << "\n";
+    g_semanticErrorHappened = true;
+    yynerrs++;
+}

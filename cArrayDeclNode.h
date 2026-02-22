@@ -27,9 +27,11 @@ class cArrayDeclNode : public cDeclNode
                 g_symbolTable.Insert(name);
                 name->SetDecl(this);
             }
+            m_name = name;
             m_size = std::to_string(size);
             AddChild(type);
             AddChild(name);
+
         }
 
         virtual string AttributesToString()
@@ -46,8 +48,9 @@ class cArrayDeclNode : public cDeclNode
     virtual cDeclNode* GetType() {
         return this;
     }
-
+    string GetTypeName() override { return m_name->GetName(); }
 
     protected: 
     std::string m_size;
+    cSymbol* m_name;
 };
