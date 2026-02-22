@@ -36,7 +36,7 @@ class cDeclNode : public cAstNode
     bool IsCompatibleWith(cDeclNode* rhs)
     {
         // exact match
-        if (this->GetType() == rhs->GetType()) return true;
+        if (this->GetTypeName() == rhs->GetTypeName()) return true;
 
         // same category, smaller → larger is ok
         if (IsInt() && rhs->IsInt() && this->GetSize() >= rhs->GetSize()) return true;

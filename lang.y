@@ -16,6 +16,7 @@
 int yylex();
 int yyerror(const char* msg);
 bool g_semanticErrorHappened = false;
+bool g_forceIntRhs = false;
 cAstNode* yyast_root;
 
 %}
@@ -432,7 +433,12 @@ term:       term '*' fact
         |   fact
                             { $$ = $1; }
 
-fact:       '(' expr ')'
+fact:      '-' fact         { 
+                                cOpNode* op = new cOpNode('-');
+                                cExprNode* zero = new cIntExprNode(0);
+                                $$ = new cBinaryExprNode(zero, op, $2, true);
+                            }
+        | '(' expr ')'
                                 { $$ = $2; }
         |   INT_VAL
                              { $$ = new cIntExprNode($1); }

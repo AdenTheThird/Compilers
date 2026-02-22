@@ -34,18 +34,20 @@ class cIntExprNode : public cExprNode
         
         cDeclNode *GetType() 
         {
+            
             if (m_value >= 0 && m_value <= 127)
             {
                 cSymbol* s = g_symbolTable.Find("char");
                 return s->GetDecl();
             }
             else
+            
             {
                 cSymbol* s = g_symbolTable.Find("int");
                 return s->GetDecl();
             }
         }
-                
+
     protected:
         int m_value;        // value of integer constant (literal)
 };

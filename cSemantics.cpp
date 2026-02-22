@@ -14,6 +14,7 @@ void cSemantics::Visit(cAssignNode* node)
     cDeclNode* lhsType = lhs->GetType();
     cDeclNode* rhsType = rhs->GetType();
 
+    //std::cout << "Found " << lhsType->GetTypeName() << " and " << rhsType->GetTypeName() << std::endl;
     // Check compatibility
     if (!lhsType->IsCompatibleWith(rhsType))
     {
