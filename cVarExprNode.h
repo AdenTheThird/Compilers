@@ -54,9 +54,13 @@ class cVarExprNode : public cExprNode
         return m_name;
     }
 
+    bool isArrayAccess = false;
+    bool isFieldAccess = false;
+
     protected:
     std::vector<cExprNode*> indices;
     std::string m_name;
+
 
 };
 

@@ -38,6 +38,23 @@ class cDeclNode : public cAstNode
         // exact match
         if (this->GetTypeName() == rhs->GetTypeName()) return true;
 
+        if (this->IsArray())
+        {
+            if (rhs->IsArray() && this->GetArrayType() == rhs->GetArrayType())
+            {
+                return true;
+            }
+
+            if (!rhs->IsArray())
+            {
+                if (this->GetArrayType() == rhs->GetTypeName()) return true;
+                if (this->GetArrayType() == "int" && rhs->GetTypeName() == "char")
+                {
+                    return true;
+                }
+            }
+        }
+
         // same category, smaller → larger is ok
         if (IsInt() && rhs->IsInt() && this->GetSize() >= rhs->GetSize()) return true;
         if (IsFloat() && rhs->IsFloat() && this->GetSize() >= rhs->GetSize()) return true;
@@ -50,5 +67,6 @@ class cDeclNode : public cAstNode
     }
 
         virtual string GetTypeName() = 0;
+        virtual string GetArrayType() { return ""; }
 
 };

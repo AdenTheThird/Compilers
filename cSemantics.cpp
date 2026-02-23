@@ -19,10 +19,10 @@ void cSemantics::Visit(cAssignNode* node)
         PostParseError("Cannot assign " + rhsType->GetTypeName() + " to "  + lhsType->GetTypeName(), lhs->GetLine());
     }
 }
-
 void cSemantics::Visit(cVarExprNode* node)
 {
     cDeclNode* decl = node->GetDecl();
+    cDeclNode* typeDecl = decl->GetType();
 
     if (decl->IsFunc())
     {
@@ -30,19 +30,16 @@ void cSemantics::Visit(cVarExprNode* node)
         return;
     }
 
-    /*
-    // array checks
-    if (!decl->IsArray() && node->GetIndexCount() > 0)
+    if (node->isArrayAccess && !typeDecl->IsArray())
     {
-        PostParseError(node->GetName() + " is not an array", node->GetLine());
+        PostParseError(node->GetVarName() + " is not an array", node->GetLine());
+        return;
     }
-
-    for (auto idx : node->GetIndices())
+/*
+    if (node->isFieldAccess && !decl->IsStruct())
     {
-        if (idx->GetType()->GetTypeName() != "int")
-        {
-            PostParseError("Index of " + node->GetName() + " is not an int", node->GetLine());
-        }
+        PostParseError(node->GetVarName() + " is not a struct", node->GetLine());
+        return;
     }
     */
 }

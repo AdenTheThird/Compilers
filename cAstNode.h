@@ -25,7 +25,7 @@ extern bool g_semanticErrorHappened;
 // The following are defined in lex.h, but can't include due to circularity
 extern int yylineno;        // Need to be able to store line numbers
 extern int yynerrs;         // Increment on each semantic error
-extern bool g_forceIntRhs;
+extern bool g_isArrayIndex;
 
 // Declare the Semantic Error routine used at parse time.
 // By declaring it here, all AST node implementations have access to it.

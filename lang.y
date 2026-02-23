@@ -16,7 +16,7 @@
 int yylex();
 int yyerror(const char* msg);
 bool g_semanticErrorHappened = false;
-bool g_forceIntRhs = false;
+bool g_isArrayIndex = false;
 cAstNode* yyast_root;
 
 %}
@@ -373,6 +373,7 @@ varref:   varref '.' IDENTIFIER
         | varref '[' expr ']'
                             {  
                               $1->Insert($3);
+                              $1->isArrayAccess = true;
                               $$ = $1;
                             }
                               
