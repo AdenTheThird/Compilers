@@ -21,6 +21,7 @@ class cVarExprNode : public cExprNode
                     SemanticParseError("Symbol " + s->GetName() + " not defined");
                 }
                 AddChild(s);
+                m_name = s->GetName();
             } 
 
             void Insert(cSymbol* s)
@@ -48,9 +49,14 @@ class cVarExprNode : public cExprNode
         cDeclNode* decl = GetDecl();
         return decl ? decl->GetType() : nullptr;
     }
+    std::string GetVarName()
+    {
+        return m_name;
+    }
 
     protected:
     std::vector<cExprNode*> indices;
+    std::string m_name;
 
 };
 

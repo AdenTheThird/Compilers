@@ -23,17 +23,10 @@ void cSemantics::Visit(cAssignNode* node)
 void cSemantics::Visit(cVarExprNode* node)
 {
     cDeclNode* decl = node->GetDecl();
-    cSymbol* sym = dynamic_cast<cSymbol*>(node->GetDecl());
-
-    if (!decl)
-    {
-        SemanticParseError("Undeclared symbol used");
-        return;
-    }
 
     if (decl->IsFunc())
     {
-        PostParseError("Symbol " + sym->GetName() + " is a function, not a variable", node->GetLine());
+        PostParseError("Symbol " + node->GetVarName() + " is a function, not a variable", node->GetLine());
         return;
     }
 
