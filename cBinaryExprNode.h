@@ -35,11 +35,29 @@ class cBinaryExprNode : public cExprNode
     virtual string NodeType() { return string("expr"); }
     virtual void Visit(cVisitor *visitor) { visitor->Visit(this); }
 
+    inline bool IsRelational(int op)
+    {
+        return op == '>' || op == '<' || op == LE || op == GE || op == EQUALS || op == NOT_EQUALS;
+    }
+
+    inline bool IsLogical(int op)
+    {
+        return op == AND || op == OR;
+    }
+
 cDeclNode* GetDecl()
 {
     cExprNode* leftExpr  = dynamic_cast<cExprNode*>(GetChild(0));
+    cOpNode* opNode  = dynamic_cast<cOpNode*>(GetChild(1));
     cExprNode* rightExpr = dynamic_cast<cExprNode*>(GetChild(2));
 
+    if (opNode)
+    {
+        if (IsRelational(opNode->GetOp()) || IsLogical(opNode->GetOp()))
+        {
+            return g_symbolTable.Find("int")->GetDecl();
+        }
+    }
     cDeclNode* leftType  = leftExpr->GetType();
     cDeclNode* rightType = rightExpr->GetType();
 

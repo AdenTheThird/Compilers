@@ -10,4 +10,5 @@ class cSemantics : public cVisitor
 {
 public:
     void Visit(cAssignNode* node);
+    void Visit(cVarExprNode* node);
 };

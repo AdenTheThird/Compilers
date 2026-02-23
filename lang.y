@@ -123,7 +123,7 @@ cAstNode* yyast_root;
 %type <var_expr_node> lval
 %type <params_node> params
 %type <decl_node> param
-%type <expr_node> expr
+%type <expr_node> expr logic_expr rel_expr
 %type <expr_node> addit
 %type <expr_node> term
 %type <expr_node> fact
@@ -406,48 +406,77 @@ params:   params ',' param
 param:      expr
                                 {  }
 
-expr:       expr EQUALS addit
-                                { cOpNode* op = new cOpNode(EQUALS);
-                                 $$ = new cBinaryExprNode($1, op, $3);  }
-        |   addit
-                            { $$ = $1; }
+// Top-level expression
+expr:
+      expr EQUALS addit
+        { $$ = new cBinaryExprNode($1, new cOpNode(EQUALS), $3); }
+    | logic_expr
+        { $$ = $1; }
+    ;
 
-addit:      addit '+' term
-                                { cOpNode* op = new cOpNode('+');
-                                  $$ = new cBinaryExprNode($1, op, $3); }
-        |   addit '-' term
-                            { cOpNode* op = new cOpNode('-');
-                              $$ = new cBinaryExprNode($1, op, $3); }
-        |   term
-                            { $$ = $1; }
+// Logical operations
+logic_expr:
+      rel_expr
+    | logic_expr AND rel_expr
+        { $$ = new cBinaryExprNode($1, new cOpNode(AND), $3); }
+    | logic_expr OR rel_expr
+        { $$ = new cBinaryExprNode($1, new cOpNode(OR), $3); }
+    ;
 
-term:       term '*' fact
-                                { cOpNode* op = new cOpNode('*');
-                                  $$ = new cBinaryExprNode($1, op, $3); }
-        |   term '/' fact
-                            { cOpNode* op = new cOpNode('/');
-                              $$ = new cBinaryExprNode($1, op, $3); }
-        |   term '%' fact
-                            { cOpNode* op = new cOpNode('%');
-                              $$ = new cBinaryExprNode($1, op, $3); }
-        |   fact
-                            { $$ = $1; }
+// Relational operations
+rel_expr:
+      addit
+    | addit '>' addit
+        { $$ = new cBinaryExprNode($1, new cOpNode('>'), $3); }
+    | addit '<' addit
+        { $$ = new cBinaryExprNode($1, new cOpNode('<'), $3); }
+    | addit GE addit
+        { $$ = new cBinaryExprNode($1, new cOpNode(GE), $3); }
+    | addit LE addit
+        { $$ = new cBinaryExprNode($1, new cOpNode(LE), $3); }
+    | addit EQUALS addit
+        { $$ = new cBinaryExprNode($1, new cOpNode(EQUALS), $3); }
+    | addit NOT_EQUALS addit
+        { $$ = new cBinaryExprNode($1, new cOpNode(NOT_EQUALS), $3); }
+    ;
 
-fact:      '-' fact         { 
-                                cOpNode* op = new cOpNode('-');
-                                cExprNode* zero = new cIntExprNode(0);
-                                $$ = new cBinaryExprNode(zero, op, $2, true);
-                            }
-        | '(' expr ')'
-                                { $$ = $2; }
-        |   INT_VAL
-                             { $$ = new cIntExprNode($1); }
-        |   FLOAT_VAL
-                            { $$ = new cFloatExprNode($1);  }
-        |   varref
-                            {  }
-        |   func_call
-                            {  }
+// Arithmetic: + / -
+addit:
+      addit '+' term
+        { $$ = new cBinaryExprNode($1, new cOpNode('+'), $3); }
+    | addit '-' term
+        { $$ = new cBinaryExprNode($1, new cOpNode('-'), $3); }
+    | term
+        { $$ = $1; }
+    ;
+
+// Arithmetic: * / %
+term:
+      term '*' fact
+        { $$ = new cBinaryExprNode($1, new cOpNode('*'), $3); }
+    | term '/' fact
+        { $$ = new cBinaryExprNode($1, new cOpNode('/'), $3); }
+    | term '%' fact
+        { $$ = new cBinaryExprNode($1, new cOpNode('%'), $3); }
+    | fact
+        { $$ = $1; }
+    ;
+
+// Leaves
+fact:
+      '-' fact
+        { $$ = new cBinaryExprNode(new cIntExprNode(0), new cOpNode('-'), $2, true); }
+    | '(' expr ')'
+        { $$ = $2; }
+    | INT_VAL
+        { $$ = new cIntExprNode($1); }
+    | FLOAT_VAL
+        { $$ = new cFloatExprNode($1); }
+    | varref
+        { $$ = $1; }
+    | func_call
+        { $$ = dynamic_cast<cExprNode*>($1); }
+    ;
 
 %%
 
