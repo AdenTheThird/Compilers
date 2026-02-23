@@ -146,6 +146,7 @@ public:
     cStmtsNode* GetStmts() const { return m_stmts; }
     cDeclsNode* GetDecls() const { return m_decls; }
     cParamsNode* GetParams() const { return m_params; }
+    int DeclCount() { if(m_params) { return m_params->Count(); } else { return 0; }}
     void SetStmts(cStmtsNode* stmts) { m_stmts = stmts; }
 
     string GetTypeName() override { return m_type->GetName(); }
@@ -156,5 +157,6 @@ private:
     cParamsNode* m_params;
     cDeclsNode* m_decls;
     cStmtsNode* m_stmts;
+    int m_paramCount;
 };
 

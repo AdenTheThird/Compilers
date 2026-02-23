@@ -44,11 +44,16 @@ void cSemantics::Visit(cVarExprNode* node)
             PostParseError("Index of " + node->GetVarName() + " is not an int", node->GetLine());
         }
     }
-/*
-    if (node->isFieldAccess && !decl->IsStruct())
+}
+
+void cSemantics::Visit(cFuncExprNode* node)
+{
+    cDeclNode* decl = node->GetDecl();
+    cFuncDeclNode* funcDecl = dynamic_cast<cFuncDeclNode*>(decl);
+    int exprCount = node->ExprCount();
+    if (exprCount > 0) exprCount--;
+    if(funcDecl->DeclCount() != exprCount)
     {
-        PostParseError(node->GetVarName() + " is not a struct", node->GetLine());
-        return;
+        PostParseError(node->GetName() + " called with wrong number of arguments", node->GetLine());
     }
-    */
 }

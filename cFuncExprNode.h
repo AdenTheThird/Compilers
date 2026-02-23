@@ -22,6 +22,8 @@ public:
         }
         AddChild(name);
         AddChild(params);
+        m_name = name->GetName();
+        if(params != nullptr) m_paramCount = params->Count();
     }
 
     cFuncExprNode() {} 
@@ -40,11 +42,24 @@ public:
         return func->GetType();
     }
 
+    std::string GetName()
+    {
+        return m_name;
+    }
     virtual cDeclNode* GetType() override
     {
         cDeclNode* decl = GetDecl();
         return decl ? decl->GetType() : nullptr;
     }
+
+    int ExprCount()
+    {
+        return m_paramCount;
+    }
+
+protected:
+    int m_paramCount = 0;
+    std::string m_name; 
         
 
 };
