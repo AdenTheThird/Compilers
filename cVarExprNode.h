@@ -29,9 +29,10 @@ class cVarExprNode : public cExprNode
                 AddChild(s);
             }
 
-            void Insert(cAstNode* node)
+            void Insert(cExprNode* node)
             {
                 AddChild(node);
+                indices.push_back(node);
             }
 
 
@@ -56,9 +57,9 @@ class cVarExprNode : public cExprNode
 
     bool isArrayAccess = false;
     bool isFieldAccess = false;
+    std::vector<cExprNode*> indices;
 
     protected:
-    std::vector<cExprNode*> indices;
     std::string m_name;
 
 

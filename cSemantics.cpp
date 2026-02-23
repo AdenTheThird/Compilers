@@ -35,6 +35,15 @@ void cSemantics::Visit(cVarExprNode* node)
         PostParseError(node->GetVarName() + " is not an array", node->GetLine());
         return;
     }
+
+    for (auto idx : node->indices)
+    {
+        cDeclNode* idxType = idx->GetType();
+        if (!idxType->IsInt())
+        {
+            PostParseError("Index of " + node->GetVarName() + " is not an int", node->GetLine());
+        }
+    }
 /*
     if (node->isFieldAccess && !decl->IsStruct())
     {
