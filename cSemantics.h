@@ -14,6 +14,7 @@ public:
     void Visit(cProgramNode* node);
     void Visit(cBlockNode* node);
     void Visit(cDeclsNode* node);
+    void Visit(cStmtsNode* node);
     void Visit(cAssignNode* node);
     void Visit(cVarDeclNode* node);
     void Visit(cVarExprNode* node);

@@ -56,5 +56,5 @@ class cBlockNode : public cStmtNode
             return m_size;
         }
     protected:
-        int m_size;
+        int m_size = 0;
 };

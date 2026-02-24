@@ -15,17 +15,39 @@ void cSemantics::Visit(cProgramNode* node)
 }
 void cSemantics::Visit(cBlockNode* node)
 {
-    int oldOffset = m_currentOffset;
-    m_currentOffset = 0;
-    m_highWaterMark = 0;
+    int startOffset = m_currentOffset;
+    int savedHighWater = m_highWaterMark;
 
     Visit(node->GetDecls());
+    Visit(node->GetStmts());
 
-    node->SetSize(m_highWaterMark);
-    m_currentOffset = oldOffset;
+    int blockSize = m_highWaterMark - startOffset;
+
+    node->SetSize(blockSize);
+
+    m_currentOffset = startOffset;
+    if(savedHighWater > m_highWaterMark)
+    {
+        m_highWaterMark = savedHighWater;
+    }
 }
 
 void cSemantics::Visit(cDeclsNode* node)
+{
+
+    int startOffset = m_currentOffset;
+
+    for (auto decl : node->GetChildren())
+    {
+        decl->Visit(this);
+    }
+
+    int declsSize = m_currentOffset - startOffset;
+
+    node->SetSize(declsSize);
+}
+
+void cSemantics::Visit(cStmtsNode* node)
 {
     for (auto decl : node->GetChildren())
     {
@@ -33,11 +55,17 @@ void cSemantics::Visit(cDeclsNode* node)
     }
 
     node->SetSize(m_highWaterMark);
-
 }
+
 void cSemantics::Visit(cVarDeclNode* node)
 {
     int size = node->GetType()->GetSize();
+
+    if(size > 1)
+    {
+        m_currentOffset = ((m_currentOffset + 3) / 4) * 4;
+    }
+
     node->SetVarSize(size);
 
     node->SetOffset(m_currentOffset);
