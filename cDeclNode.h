@@ -37,6 +37,9 @@ class cDeclNode : public cAstNode
     {
         // exact match
         if (this->GetTypeName() == rhs->GetTypeName()) return true;
+        if (this->GetTypeName() == "int" && rhs->GetTypeName() == "char") return true;
+        if (this->GetTypeName() == "float" && rhs->GetTypeName() == "char") return true;
+        if (this->GetTypeName() == "float" && rhs->GetTypeName() == "long") return true;
 
         if (this->IsArray())
         {
@@ -57,6 +60,7 @@ class cDeclNode : public cAstNode
 
         // same category, smaller → larger is ok
         if (IsInt() && rhs->IsInt() && this->GetSize() >= rhs->GetSize()) return true;
+        if (IsInt() && rhs->IsChar() && this->GetSize() >= rhs->GetSize()) return true;
         if (IsFloat() && rhs->IsFloat() && this->GetSize() >= rhs->GetSize()) return true;
 
         // allow int → float promotion

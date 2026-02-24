@@ -214,14 +214,14 @@ array_decl: ARRAY TYPE_ID '[' INT_VAL ']' IDENTIFIER
 func_decl: func_header ';'
 {
     g_symbolTable.DecreaseScope();
-    $$ = new cFuncDeclNode($1->type, $1->name, $1->params);
+    $$ = new cFuncDeclNode($1->type, $1->name, $1->params, false);
     CHECK_ERROR();
 }
 
 | func_header '{' decls stmts '}'
 {
     g_symbolTable.DecreaseScope();
-    $$ = new cFuncDeclNode($1->type, $1->name, $1->params, $3, $4);
+    $$ = new cFuncDeclNode($1->type, $1->name, $1->params, $3, $4, true);
     CHECK_ERROR();
 
 }
@@ -229,7 +229,7 @@ func_decl: func_header ';'
 |   func_header  '{' stmts '}'
 {
     g_symbolTable.DecreaseScope();
-    $$ = new cFuncDeclNode($1->type, $1->name, $1->params, $3);
+    $$ = new cFuncDeclNode($1->type, $1->name, $1->params, $3, true);
     CHECK_ERROR();
 }
 ;
@@ -244,11 +244,6 @@ func_header: func_prefix paramsspec ')'
         {
             cFuncDeclNode* existingFunc = dynamic_cast<cFuncDeclNode*>(existingDecl);
 
-            // check return type
-//            if (existingFunc->GetTypeSymbol()->GetName() != $1->type->GetName())
- //               SemanticParseError($1->name->GetName() + " previously declared with different return type");
-
-            // check parameter count
             int existingCount = existingFunc->GetParams() ? existingFunc->GetParams()->Count() : 0;
             int newCount = $2 ? $2->Count() : 0;
             if (existingCount != newCount)

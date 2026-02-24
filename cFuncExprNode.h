@@ -22,6 +22,7 @@ public:
         }
         AddChild(name);
         AddChild(params);
+        m_params = params;
         m_name = name->GetName();
         if(params != nullptr) m_paramCount = params->Count();
     }
@@ -57,9 +58,15 @@ public:
         return m_paramCount;
     }
 
+    cParamsNode* GetParams() const
+    {
+        return m_params;
+    }
+
 protected:
     int m_paramCount = 0;
     std::string m_name; 
+    cParamsNode* m_params = nullptr;
         
 
 };
