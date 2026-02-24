@@ -26,7 +26,14 @@ class cVarDeclNode : public cDeclNode
             AddChild(s2);
         }
 
-        virtual string NodeType() { return string("var_decl"); }
+        string AttributesToString()
+        {
+            if (GetVarSize() == 0 && GetOffset() == 0) return "";
+            return " size=\"" + std::to_string(GetVarSize()) +
+                   "\" offset=\"" + std::to_string(GetOffset()) + "\"";
+        }
+
+        virtual string NodeType() { return "var_decl"; }
         virtual void Visit(cVisitor *visitor) { visitor->Visit(this); }
         virtual bool IsVar() override { return true; }
         virtual cDeclNode* GetType() override {

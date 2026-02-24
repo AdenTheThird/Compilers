@@ -1,5 +1,53 @@
 #include "cSemantics.h"
 
+void cSemantics::Visit(cProgramNode* node)
+{
+    Visit(node->GetBlock());
+
+    int blockSize = m_highWaterMark;
+
+    if(blockSize > 1)
+    {
+        blockSize = ((blockSize + 3) / 4) * 4;
+    }
+
+    node->SetSize(blockSize);
+}
+void cSemantics::Visit(cBlockNode* node)
+{
+    int oldOffset = m_currentOffset;
+    m_currentOffset = 0;
+    m_highWaterMark = 0;
+
+    Visit(node->GetDecls());
+
+    node->SetSize(m_highWaterMark);
+    m_currentOffset = oldOffset;
+}
+
+void cSemantics::Visit(cDeclsNode* node)
+{
+    for (auto decl : node->GetChildren())
+    {
+        decl->Visit(this);
+    }
+
+    node->SetSize(m_highWaterMark);
+
+}
+void cSemantics::Visit(cVarDeclNode* node)
+{
+    int size = node->GetType()->GetSize();
+    node->SetVarSize(size);
+
+    node->SetOffset(m_currentOffset);
+
+    m_currentOffset += size;
+    if (m_currentOffset > m_highWaterMark)
+    {
+        m_highWaterMark = m_currentOffset;
+    }
+}
 void cSemantics::Visit(cAssignNode* node)
 {
     cVarExprNode* lhs = node->GetLhs();
@@ -96,3 +144,4 @@ void cSemantics::Visit(cFuncExprNode* node)
     }
 
 }
+

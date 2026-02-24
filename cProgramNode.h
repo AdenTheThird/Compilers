@@ -18,8 +18,37 @@ class cProgramNode : public cAstNode
         cProgramNode(cBlockNode *block) : cAstNode()
         {
             AddChild(block);
+            m_block = block;
+        }
+
+        string AttributesToString()
+        {
+            if(m_size == 0) 
+            {
+                return "";
+            }
+            return " size=\"" + std::to_string(m_size) + "\"";
+        }
+
+        int GetSize()
+        {
+            return m_size;
+        }
+
+        void SetSize(int size)
+        {
+            m_size = size;
+        }
+
+        cBlockNode* GetBlock()
+        {
+            return m_block;
         }
 
         virtual string NodeType() { return string("program"); }
         virtual void Visit(cVisitor *visitor) { visitor->Visit(this); }
+
+    protected:
+        int m_size;
+        cBlockNode* m_block;
 };

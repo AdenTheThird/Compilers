@@ -70,7 +70,30 @@ class cDeclNode : public cAstNode
         return false;
     }
 
+    int GetVarSize()
+    {
+        return m_size;
+    }
+
+    void SetVarSize(int size)
+    {
+        m_size = size;
+    }
+    
+    void SetOffset(int offset)
+    {
+        m_offset = offset;
+    }
+    
+    int GetOffset()
+    {
+        return m_offset;
+    }
+
+
         virtual string GetTypeName() = 0;
         virtual string GetArrayType() { return ""; }
-
+    protected:
+        int m_size;
+        int m_offset;
 };

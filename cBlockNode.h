@@ -39,4 +39,22 @@ class cBlockNode : public cStmtNode
         {
             return static_cast<cStmtsNode*>(GetChild(1));
         }
+
+       string AttributesToString()
+       {
+           if (m_size == 0) return "";
+           return " size=\"" + std::to_string(m_size) + "\"";
+       }
+
+        void SetSize(int size)
+        {
+            m_size = size;
+        }
+
+        int GetSize()
+        {
+            return m_size;
+        }
+    protected:
+        int m_size;
 };
