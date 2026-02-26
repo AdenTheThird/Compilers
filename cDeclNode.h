@@ -72,11 +72,13 @@ class cDeclNode : public cAstNode
 
     int GetVarSize()
     {
+        //std::cout << "Var size found as " << m_size << std::endl;
         return m_size;
     }
 
     void SetVarSize(int size)
     {
+        //std::cout << "Var size set to " << size << std::endl;
         m_size = size;
     }
     

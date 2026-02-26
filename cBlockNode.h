@@ -48,11 +48,14 @@ class cBlockNode : public cStmtNode
 
         void SetSize(int size)
         {
+
+            //std::cout << "Block size set with size " << size << std::endl;
             m_size = size;
         }
 
         int GetSize()
         {
+            //std::cout << "Block retrieved with size " << m_size << std::endl;
             return m_size;
         }
     protected:

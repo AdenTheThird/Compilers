@@ -2,6 +2,7 @@
 
 void cSemantics::Visit(cProgramNode* node)
 {
+    //std::cout << "Visiting program node\n";
     Visit(node->GetBlock());
 
     int blockSize = m_highWaterMark;
@@ -15,25 +16,32 @@ void cSemantics::Visit(cProgramNode* node)
 }
 void cSemantics::Visit(cBlockNode* node)
 {
-    int startOffset = m_currentOffset;
+//    std::cout << "Visiting block node\n";
     int savedHighWater = m_highWaterMark;
+    int startOffset = m_currentOffset;
+
+    m_highWaterMark = m_currentOffset;
 
     Visit(node->GetDecls());
     Visit(node->GetStmts());
 
-    int blockSize = m_highWaterMark - startOffset;
+    int blockHighWater = m_highWaterMark;
 
-    node->SetSize(blockSize);
+    node->SetSize(blockHighWater - startOffset);
+//  std::cout << "Block Decls size = " << node->GetDecls()->GetSize() << std::endl;
+ // std::cout << "Block Stmts size = " << node->GetStmts()->GetSize() << std::endl;
+    //std::cout << m_highWaterMark << " " << startOffset << std::endl;
 
     m_currentOffset = startOffset;
-    if(savedHighWater > m_highWaterMark)
-    {
-        m_highWaterMark = savedHighWater;
-    }
+    m_highWaterMark = std::max(savedHighWater, blockHighWater);
+   // std::cout << "Block High Water: " << m_highWaterMark << std::endl <<  "Start Offset: " << startOffset << std::endl;
+//    std::cout << node->GetSize() << std::endl;
+
 }
 
 void cSemantics::Visit(cDeclsNode* node)
 {
+    //std::cout << "Visiting decls node\n";
 
     int startOffset = m_currentOffset;
 
@@ -49,16 +57,19 @@ void cSemantics::Visit(cDeclsNode* node)
 
 void cSemantics::Visit(cStmtsNode* node)
 {
+
+    //std::cout << "Visiting stmts node\n";
     for (auto decl : node->GetChildren())
     {
         decl->Visit(this);
     }
 
-    node->SetSize(m_highWaterMark);
+    node->SetSize(0);
 }
 
 void cSemantics::Visit(cVarDeclNode* node)
 {
+    //std::cout << "Visiting var decl node\n";
     int size = node->GetType()->GetSize();
 
     if(size > 1)
@@ -78,6 +89,7 @@ void cSemantics::Visit(cVarDeclNode* node)
 }
 void cSemantics::Visit(cAssignNode* node)
 {
+    //std::cout << "Visiting assign node\n";
     cVarExprNode* lhs = node->GetLhs();
     cExprNode* rhs = node->GetRhs();
 
@@ -97,6 +109,7 @@ void cSemantics::Visit(cAssignNode* node)
 }
 void cSemantics::Visit(cVarExprNode* node)
 {
+    //std::cout << "Visiting var expr node\n";
     cDeclNode* decl = node->GetDecl();
     cDeclNode* typeDecl = decl->GetType();
 
@@ -124,6 +137,7 @@ void cSemantics::Visit(cVarExprNode* node)
 
 void cSemantics::Visit(cFuncExprNode* node) 
 {
+    //std::cout << "Visiting func expr node\n";
     cDeclNode* decl = node->GetDecl();
     cFuncDeclNode* funcDecl = dynamic_cast<cFuncDeclNode*>(decl);
     if (!funcDecl) return;

@@ -51,6 +51,7 @@ class cDeclsNode : public cAstNode
 
         void SetSize(int size) 
         { 
+           //std::cout << "Decls size set with size " << size << std::endl;
            m_size = size;
         }
 
