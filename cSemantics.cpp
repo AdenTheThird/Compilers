@@ -16,7 +16,6 @@ void cSemantics::Visit(cProgramNode* node)
 }
 void cSemantics::Visit(cBlockNode* node)
 {
-//    std::cout << "Visiting block node\n";
     int savedHighWater = m_highWaterMark;
     int startOffset = m_currentOffset;
 
@@ -28,14 +27,9 @@ void cSemantics::Visit(cBlockNode* node)
     int blockHighWater = m_highWaterMark;
 
     node->SetSize(blockHighWater - startOffset);
-//  std::cout << "Block Decls size = " << node->GetDecls()->GetSize() << std::endl;
- // std::cout << "Block Stmts size = " << node->GetStmts()->GetSize() << std::endl;
-    //std::cout << m_highWaterMark << " " << startOffset << std::endl;
 
     m_currentOffset = startOffset;
     m_highWaterMark = std::max(savedHighWater, blockHighWater);
-   // std::cout << "Block High Water: " << m_highWaterMark << std::endl <<  "Start Offset: " << startOffset << std::endl;
-//    std::cout << node->GetSize() << std::endl;
 
 }
 
@@ -87,6 +81,7 @@ void cSemantics::Visit(cVarDeclNode* node)
         m_highWaterMark = m_currentOffset;
     }
 }
+
 void cSemantics::Visit(cAssignNode* node)
 {
     //std::cout << "Visiting assign node\n";

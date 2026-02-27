@@ -36,6 +36,12 @@ class cVarExprNode : public cExprNode
             }
 
 
+    string AttributesToString()
+    {
+        if (GetDecl()->GetVarSize() == 0 && GetDecl()->GetOffset() == 0) return "";
+        return " size=\"" + std::to_string(GetDecl()->GetVarSize()) + 
+            "\" offset=\"" + std::to_string(GetDecl()->GetOffset()) + "\"";
+    } 
 
     virtual string NodeType() { return string("varref"); } 
     virtual void Visit(cVisitor *visitor) { visitor->Visit(this); } 
