@@ -147,6 +147,13 @@ public:
         AddChild(m_stmts);
     }
 
+    string AttributesToString()
+    {
+        if (GetSize() == 0 && GetOffset() == 0) return "";
+        return " size=\"" + std::to_string(GetSize()) + 
+            "\" offset=\"" + std::to_string(GetOffset()) + "\"";
+    }
+
     virtual string NodeType() override { return "func"; }
     virtual bool IsFunc() override { return true; }
     virtual void Visit(cVisitor* visitor) override { visitor->Visit(this); }
@@ -157,6 +164,17 @@ public:
     cStmtsNode* GetStmts() const { return m_stmts; }
     cDeclsNode* GetDecls() const { return m_decls; }
     cParamsNode* GetParams() const { return m_params; }
+
+
+    int GetSize()
+    {
+        return m_size;
+    }
+
+    void SetSize(int size)
+    {
+        m_size = size;
+    }
 
     int DeclCount()
     {
@@ -174,4 +192,5 @@ private:
     cStmtsNode* m_stmts;
     bool m_hasBody = false;
     int m_paramCount;
+    int m_size;
 };

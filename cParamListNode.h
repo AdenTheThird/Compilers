@@ -17,7 +17,10 @@ class cParamListNode : public cParamsNode
 
     public:
 
-        cParamListNode() : cParamsNode(nullptr) {}
+        cParamListNode() : cParamsNode(nullptr)
+        {
+        }
+
         
         void Insert(cDeclNode* param) 
         {
@@ -26,7 +29,25 @@ class cParamListNode : public cParamsNode
 
         const std::vector<cDeclNode*>& GetParams() const { return m_params; }
 
+        string AttributesToString()
+        {
+            if (GetSize() == 0) return "";
+            return " size =\"" + std::to_string(GetSize()) +  "\"";
+        }
+
         virtual string NodeType() { return string("params"); }
         virtual void Visit(cVisitor *visitor) { visitor->Visit(this); }
 
+        void SetSize(int size)
+        {
+            m_size = size;
+        }
+
+        int GetSize()
+        {
+            return m_size;
+        }
+
+    protected:
+        int m_size;
 };

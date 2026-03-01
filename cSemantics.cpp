@@ -49,6 +49,22 @@ void cSemantics::Visit(cDeclsNode* node)
     node->SetSize(declsSize);
 }
 
+void cSemantics::Visit(cParamsNode* node)
+{
+
+    int startOffset = m_currentOffset;
+
+    for (auto decl : node->GetChildren())
+    {
+        decl->Visit(this);
+    }
+    
+    int paramsSize = m_currentOffset - startOffset;
+
+    node->SetSize(paramsSize);
+
+}
+
 void cSemantics::Visit(cStmtsNode* node)
 {
 
@@ -80,6 +96,55 @@ void cSemantics::Visit(cVarDeclNode* node)
     {
         m_highWaterMark = m_currentOffset;
     }
+}
+
+void cSemantics::Visit(cFuncDeclNode* node)
+{
+    int savedOffset = m_currentOffset;
+    int savedHighWater = m_highWaterMark;
+
+    m_currentOffset = 0;
+    m_highWaterMark = 0;
+
+    if (node->GetParams())
+    {
+        Visit(node->GetParams());
+        int paramOffset = -8;
+        int paramSize = 0;
+
+        for (auto param : node->GetParams()->GetChildren())
+        {
+            cVarDeclNode* var = dynamic_cast<cVarDeclNode*>(param);
+            if (!var) continue;
+
+            int size = var->GetType()->GetSize();
+
+            paramOffset -= size;
+            paramSize += size;
+
+            var->SetVarSize(size);
+            var->SetOffset(paramOffset);
+        }
+        //node->GetParams()->SetSize(paramSize);
+    }
+
+    if (node->GetDecls())
+    {
+        int declOffset = m_currentOffset;
+        m_currentOffset = 0;
+        Visit(node->GetDecls());
+        m_currentOffset = declOffset;
+    }
+
+    if (node->GetStmts())
+    {
+        Visit(node->GetStmts());
+    }
+
+    node->SetSize(m_highWaterMark);
+
+    m_currentOffset = savedOffset;
+    m_highWaterMark = savedHighWater;
 }
 
 void cSemantics::Visit(cAssignNode* node)

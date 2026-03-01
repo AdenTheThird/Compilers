@@ -1,16 +1,39 @@
-0 0
-0 4
-0 8
-<program size="12"><block size="12"><decls size="12"><var_decl size="1" offset="0"><sym id="1" name="char" /><sym id="6" name="aa" /></var_decl>
+<program size="16"><block size="16"><decls size="16"><var_decl size="4" offset="0"><sym id="2" name="int" /><sym id="6" name="aa" /></var_decl>
 <var_decl size="4" offset="4"><sym id="2" name="int" /><sym id="7" name="bb" /></var_decl>
-<var_decl size="4" offset="8"><sym id="3" name="float" /><sym id="8" name="cc" /></var_decl>
+<var_decl size="4" offset="8"><sym id="2" name="int" /><sym id="8" name="cc" /></var_decl>
+<func size="8" offset="0"><sym id="2" name="int" /><sym id="9" name="foo" /><args size ="8"><var_decl size="4" offset="-12"><sym id="2" name="int" /><sym id="10" name="bb" /></var_decl>
+<var_decl size="4" offset="-16"><sym id="2" name="int" /><sym id="11" name="cc" /></var_decl>
+</args>
+<decls size="4"><var_decl size="4" offset="0"><sym id="2" name="int" /><sym id="12" name="aa" /></var_decl>
 </decls>
-<stmts><assign><varref><sym id="6" name="aa" /></varref>
-<int value="1" /></assign>
-<assign><varref><sym id="7" name="bb" /></varref>
-<int value="200" /></assign>
-<assign><varref><sym id="8" name="cc" /></varref>
-<float value="3.000000" /></assign>
+<stmts><assign><varref size="4" offset="0"><sym id="12" name="aa" /></varref>
+<expr><varref size="4" offset="-12"><sym id="10" name="bb" /></varref>
+<op value='+' /><varref size="4" offset="-16"><sym id="11" name="cc" /></varref>
+</expr>
+</assign>
+<print><varref size="4" offset="0"><sym id="12" name="aa" /></varref>
+</print>
+<return><varref size="4" offset="0"><sym id="12" name="aa" /></varref>
+</return>
+</stmts>
+</func>
+<var_decl size="4" offset="12"><sym id="2" name="int" /><sym id="13" name="dd" /></var_decl>
+</decls>
+<stmts><assign><varref size="4" offset="12"><sym id="13" name="dd" /></varref>
+<expr><expr><varref size="4" offset="0"><sym id="6" name="aa" /></varref>
+<op value='+' /><varref size="4" offset="4"><sym id="7" name="bb" /></varref>
+</expr>
+<op value='+' /><varref size="4" offset="8"><sym id="8" name="cc" /></varref>
+</expr>
+</assign>
+<assign><varref size="4" offset="0"><sym id="6" name="aa" /></varref>
+<funcCall><sym id="9" name="foo" /><params><varref size="4" offset="12"><sym id="13" name="dd" /></varref>
+<varref size="4" offset="8"><sym id="8" name="cc" /></varref>
+</params>
+</funcCall>
+</assign>
+<print><varref size="4" offset="0"><sym id="6" name="aa" /></varref>
+</print>
 </stmts>
 </block>
 </program>
