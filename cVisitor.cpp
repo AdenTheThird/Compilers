@@ -25,7 +25,7 @@ void cVisitor::Visit(cFuncExprNode* node)     { node->VisitAllChildren(this); }
 void cVisitor::Visit(cIfNode* node)           { node->VisitAllChildren(this); }
 void cVisitor::Visit(cIntExprNode* node)      { node->VisitAllChildren(this); }
 void cVisitor::Visit(cOpNode* node)           { node->VisitAllChildren(this); }
-void cVisitor::Visit(cParamListNode* node)    { node->VisitAllChildren(this); }
+//void cVisitor::Visit(cParamListNode* node)    { node->VisitAllChildren(this); }
 void cVisitor::Visit(cParamsNode* node)       { node->VisitAllChildren(this); }
 void cVisitor::Visit(cPrintNode* node)        { node->VisitAllChildren(this); }
 void cVisitor::Visit(cPrintsNode* node)       { node->VisitAllChildren(this); }

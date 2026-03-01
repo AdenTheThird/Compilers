@@ -55,7 +55,8 @@ public:
 
     int ExprCount()
     {
-        return m_paramCount;
+        return m_params->Count();
+   //     return m_paramCount;
     }
 
     cParamsNode* GetParams() const

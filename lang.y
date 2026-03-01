@@ -122,7 +122,7 @@ cAstNode* yyast_root;
 %type <stmt_node> stmt
 %type <var_expr_node> lval
 %type <params_node> params
-%type <decl_node> param
+%type <expr_node> param
 %type <expr_node> expr logic_expr rel_expr
 %type <expr_node> addit
 %type <expr_node> term
@@ -300,7 +300,7 @@ paramsspec:  paramsspec ',' paramspec
                                 { $1->Insert($3);
                                   $$ = $1; }
         |   paramspec
-                            { $$ = new cParamsNode($1);
+                            { $$ = new cParamsNode($1, "args");
                               }
 
 paramspec:  var_decl
@@ -396,11 +396,11 @@ params:   params ',' param
                             { $1->Insert($3);
                               $$ = $1;   }
         |   param
-                            { $$ = new cParamListNode();  
-                              $$->Insert($1); }
+                            { $$ = new cParamsNode($1, "params");  
+}
 
 param:      expr
-                                {  }
+                                {$$ = $1;  }
 
 // Top-level expression
 expr:

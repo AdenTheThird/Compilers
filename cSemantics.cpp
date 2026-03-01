@@ -141,7 +141,7 @@ void cSemantics::Visit(cFuncDeclNode* node)
         Visit(node->GetStmts());
     }
 
-    node->SetSize(m_highWaterMark);
+    node->SetSize(savedHighWater - node->GetParams()->GetSize()); // Look at this later
 
     m_currentOffset = savedOffset;
     m_highWaterMark = savedHighWater;
@@ -202,8 +202,9 @@ void cSemantics::Visit(cFuncExprNode* node)
     cFuncDeclNode* funcDecl = dynamic_cast<cFuncDeclNode*>(decl);
     if (!funcDecl) return;
 
+    node->GetParams()->SetSize(funcDecl->GetParams()->GetSize());
     int exprCount = node->ExprCount();
-    if (exprCount > 0) exprCount--;
+    //if (exprCount > 0) exprCount--;
 
     if (funcDecl->DeclCount() != exprCount) 
     {

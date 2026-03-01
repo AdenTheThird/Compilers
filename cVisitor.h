@@ -26,7 +26,7 @@ class cFuncExprNode;
 class cIfNode;
 class cIntExprNode;
 class cOpNode;
-class cParamListNode;
+//class cParamListNode;
 class cParamsNode;
 class cPrintNode;
 class cPrintsNode;
@@ -60,7 +60,7 @@ class cVisitor
         virtual void Visit(cIfNode* node);
         virtual void Visit(cIntExprNode* node);
         virtual void Visit(cOpNode* node);
-        virtual void Visit(cParamListNode* node);
+ //       virtual void Visit(cParamListNode* node);
         virtual void Visit(cParamsNode* node);
         virtual void Visit(cPrintNode* node);
         virtual void Visit(cPrintsNode* node);

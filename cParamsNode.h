@@ -14,21 +14,22 @@ class cParamsNode : public cAstNode
 
     public:
 
-        cParamsNode(cDeclNode* decl)
+        cParamsNode(cAstNode* decl, std::string type)
         {
+            m_num_children++;
+            m_type = type;
             AddChild(decl);
             m_children.push_back(decl);
         }
 
-        void Insert(cDeclNode* decl)
+        void Insert(cAstNode* decl)
         {
+            m_num_children++;
             AddChild(decl);
             m_children.push_back(decl);
         }
 
-        int Count()
-        {
-            return NumChildren();
+        int Count() { return m_num_children;
         }
 
         const std::vector<cAstNode*>& GetChildren() const
@@ -40,10 +41,10 @@ class cParamsNode : public cAstNode
     string AttributesToString()
     {
         if (GetSize() == 0) return "";
-        return " size =\"" + std::to_string(GetSize()) + "\"";
+        return " size =\"" + std::to_string(m_size) + "\"";
     }
 
-    virtual string NodeType() { return string("args"); }
+    virtual string NodeType() { return string(m_type); }
     virtual void Visit(cVisitor *visitor) {visitor->Visit(this); }
 
     int GetSize()
@@ -61,7 +62,9 @@ class cParamsNode : public cAstNode
     }
 
     protected:
+    std::string m_type;
     std::vector<cAstNode*> m_children;
+    int m_num_children = 0;
     int m_size;
 
 };
