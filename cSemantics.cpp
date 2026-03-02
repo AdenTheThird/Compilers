@@ -3,7 +3,10 @@
 void cSemantics::Visit(cProgramNode* node)
 {
     //std::cout << "Visiting program node\n";
-    Visit(node->GetBlock());
+    if(node->GetBlock())
+    {
+        Visit(node->GetBlock());
+    }
 
     int blockSize = m_highWaterMark;
 
@@ -21,8 +24,15 @@ void cSemantics::Visit(cBlockNode* node)
 
     m_highWaterMark = m_currentOffset;
 
-    Visit(node->GetDecls());
-    Visit(node->GetStmts());
+    if(node->GetDecls())
+    {
+        Visit(node->GetDecls());
+    }
+    
+    if(node->GetStmts())
+    {
+        Visit(node->GetStmts());
+    }
 
     int blockHighWater = m_highWaterMark;
 
@@ -124,7 +134,7 @@ void cSemantics::Visit(cFuncDeclNode* node)
     m_currentOffset = 0;
     m_highWaterMark = 0;
 
-    if (node->GetParams())
+    if (node->GetParams() != nullptr)
     {
         Visit(node->GetParams());
         int paramOffset = -8;
@@ -179,8 +189,10 @@ void cSemantics::Visit(cFuncDeclNode* node)
         Visit(node->GetStmts());
     }
 
-    node->SetSize(node->GetDecls()->GetSize());
-
+    if(node->GetDecls())
+    {
+        node->SetSize(node->GetDecls()->GetSize());
+    }
     m_currentOffset = savedOffset;
     m_highWaterMark = savedHighWater;
 }

@@ -161,10 +161,31 @@ public:
     virtual cDeclNode* GetDecl() { return this; }
 
     bool HasBody() const { return m_stmts != nullptr; }
-    cStmtsNode* GetStmts() const { return m_stmts; }
-    cDeclsNode* GetDecls() const { return m_decls; }
-    cParamsNode* GetParams() const { return m_params; }
 
+    cStmtsNode* GetStmts() const 
+    {  
+        if(m_stmts) 
+        {
+            return m_stmts;
+        }
+         return nullptr;
+    }
+    cDeclsNode* GetDecls() const 
+    {  
+        if(m_decls) 
+        {
+            return m_decls;
+        }
+         return nullptr;
+    }
+    cParamsNode* GetParams() const 
+    {  
+        if(m_params) 
+        {
+            return m_params;
+        }
+         return nullptr;
+    }
 
     int GetSize()
     {
@@ -188,8 +209,8 @@ private:
     cSymbol* m_type;
     cSymbol* m_name;
     cParamsNode* m_params = nullptr;
-    cDeclsNode* m_decls;
-    cStmtsNode* m_stmts;
+    cDeclsNode* m_decls = nullptr;
+    cStmtsNode* m_stmts = nullptr;
     bool m_hasBody = false;
     int m_paramCount;
     int m_size;
