@@ -39,9 +39,19 @@ class cVarExprNode : public cExprNode
     string AttributesToString()
     {
         if (GetDecl()->GetVarSize() == 0 && GetDecl()->GetOffset() == 0) return "";
-        return " size=\"" + std::to_string(GetDecl()->GetVarSize()) + 
-            "\" offset=\"" + std::to_string(GetDecl()->GetOffset()) + "\"";
-    } 
+
+        if(GetType()->IsArray())
+        {
+            return " size=\"" + std::to_string(GetDecl()->GetVarSize()) + 
+            "\" offset=\"" + std::to_string(GetDecl()->GetOffset()) + "\" rowsizes=\""
+            + std::to_string(m_rowSize) + "\"";
+        }
+        else
+        {
+            return " size=\"" + std::to_string(GetDecl()->GetVarSize()) + 
+                "\" offset=\"" + std::to_string(GetDecl()->GetOffset()) + "\"";
+        }
+    }
 
     virtual string NodeType() { return string("varref"); } 
     virtual void Visit(cVisitor *visitor) { visitor->Visit(this); } 
@@ -61,12 +71,18 @@ class cVarExprNode : public cExprNode
         return m_name;
     }
 
+    void SetRowSize(int size)
+    {
+        m_rowSize = size;
+    }
+
     bool isArrayAccess = false;
     bool isFieldAccess = false;
     std::vector<cExprNode*> indices;
 
     protected:
     std::string m_name;
+    int m_rowSize;
 
 
 };

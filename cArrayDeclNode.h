@@ -28,8 +28,9 @@ class cArrayDeclNode : public cDeclNode
                 name->SetDecl(this);
             }
             m_name = name;
+            m_baseType = type;
             m_type = type->GetName();
-            m_size = std::to_string(size);
+            m_size = size;
             AddChild(type);
             AddChild(name);
 
@@ -37,7 +38,7 @@ class cArrayDeclNode : public cDeclNode
 
         virtual string AttributesToString()
         {
-            return " count=\"" + m_size + "\"";
+            return " count=\"" + std::to_string(m_size) + "\"";
         }
 
     virtual string NodeType() { return string("array_decl"); }
@@ -45,15 +46,26 @@ class cArrayDeclNode : public cDeclNode
 
     string GetArrayType() override { return m_type; }
 
+    cSymbol* GetBaseType()
+    {
+        return m_baseType;
+    }
+
     virtual bool IsArray() override { return true; }
     virtual bool IsType() override { return true; }
+    int GetCount()
+    {
+        return m_size;
+    }
+
     virtual cDeclNode* GetType() {
         return this;
     }
     string GetTypeName() override { return m_name->GetName(); }
 
     protected: 
-    std::string m_size;
+    int m_size;
     cSymbol* m_name;
+    cSymbol* m_baseType;
     std::string m_type;
 };

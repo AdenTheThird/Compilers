@@ -80,7 +80,25 @@ void cSemantics::Visit(cStmtsNode* node)
 void cSemantics::Visit(cVarDeclNode* node)
 {
     //std::cout << "Visiting var decl node\n";
-    int size = node->GetType()->GetSize();
+    int size;
+    cDeclNode* type = node->GetType();
+    if (type->IsArray())
+    {
+        cArrayDeclNode* arrayNode = dynamic_cast<cArrayDeclNode*>(type);
+        if(arrayNode->GetBaseType()->GetName() != "char")
+        {
+            size = arrayNode->GetCount() * 4;
+        }
+        else
+        {
+            size = arrayNode->GetCount();
+        }   
+
+    }
+    else
+    {
+        size = node->GetType()->GetSize();
+    }
 
     if(size > 1)
     {
@@ -182,6 +200,17 @@ void cSemantics::Visit(cAssignNode* node)
     cDeclNode* lhsType = lhs->GetType();
     cDeclNode* rhsType = rhs->GetType();
 
+    if(lhsType->IsArray())
+    {
+        cArrayDeclNode* lhsArray = dynamic_cast<cArrayDeclNode*>(lhsType);
+        lhsType = lhsArray->GetBaseType()->GetDecl();
+    }
+
+    if(rhsType->IsArray())
+    {
+        cArrayDeclNode* rhsArray = dynamic_cast<cArrayDeclNode*>(rhsType);
+        rhsType = rhsArray->GetBaseType()->GetDecl();
+    }
     if (!lhsType->IsCompatibleWith(rhsType))
     {
         PostParseError("Cannot assign " + rhsType->GetTypeName() + " to "  + lhsType->GetTypeName(), lhs->GetLine());
@@ -192,6 +221,19 @@ void cSemantics::Visit(cVarExprNode* node)
     //std::cout << "Visiting var expr node\n";
     cDeclNode* decl = node->GetDecl();
     cDeclNode* typeDecl = decl->GetType();
+
+    if(typeDecl->IsArray())
+    {
+        cArrayDeclNode* declArray = dynamic_cast<cArrayDeclNode*>(typeDecl);
+        if(declArray->GetBaseType()->GetName() == "char")
+        {
+            node->SetRowSize(1);
+        }
+        else
+        {
+            node->SetRowSize(4);
+        }
+    }
 
     if (decl->IsFunc())
     {
