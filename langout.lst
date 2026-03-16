@@ -1,0 +1,7 @@
+; FILE: langout.slb
+; FILE: langout.sl
+; FILE: io320.sl
+  Code    Data
+    16       0     stackl V1.0.4 slasm
+    16       0     begindata
+    16       0     ÿÿÿÿÿÿÿÿ*    16       0         16       0         16       0     

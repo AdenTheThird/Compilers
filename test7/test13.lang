@@ -1,0 +1,8 @@
+//Tests function declaration with parameters
+program
+{
+    int add(int a, int b)
+    {
+        return a + b;
+    }
+}

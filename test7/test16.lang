@@ -1,0 +1,16 @@
+// Test array access
+program
+{
+    array int[5] int_5;
+    int_5 arr;
+    int x;
+
+    arr[0] = 10;
+
+    x = arr[0];
+    print(x);    
+
+    arr[2] = 99;
+    print(arr[2]); // Should print 99
+
+}

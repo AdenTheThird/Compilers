@@ -23,11 +23,14 @@ class cProgramNode : public cAstNode
 
         string AttributesToString()
         {
+            /*
             if(m_size == 0) 
             {
                 return "";
             }
             return " size=\"" + std::to_string(m_size) + "\"";
+            */
+            return "";
         }
 
         int GetSize()

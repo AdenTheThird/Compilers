@@ -44,6 +44,14 @@ class cAstNode
             return m_LineNum;
         }
 
+        cAstNode* GetChild(int child)
+        {
+            if (child >= (int)m_children.size()) return nullptr;
+            return m_children[child];
+        }
+        
+        int NumChildren()       { return (int)m_children.size(); }
+
     //****************************************
     // As protected, these methods are limited as to where you call them.
     // I impose an even more-strict requirement:
@@ -79,15 +87,9 @@ class cAstNode
         bool HasChildren()      { return !m_children.empty(); }
 
         //*************************************
-        int NumChildren()       { return (int)m_children.size(); }
 
         //*************************************
         // Return a child by index
-        cAstNode* GetChild(int child)
-        {
-            if (child >= (int)m_children.size()) return nullptr;
-            return m_children[child];
-        }
 
         //*************************************
         // Set a child by index. The child must already exist
@@ -127,6 +129,8 @@ class cAstNode
         // return a string representation of the node
         string ToString() 
         {
+            return "";
+            /*
             string result("");
 
             result += "<" + NodeType();
@@ -146,6 +150,7 @@ class cAstNode
                 result += " />";
 
             return result;
+            */
         }
 
         //*************************************

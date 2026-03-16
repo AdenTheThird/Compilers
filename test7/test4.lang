@@ -1,0 +1,8 @@
+//Test for variable duplication (uncomment to test compilation error)
+program
+{
+    int x;
+//  int x;
+    x = 5;
+    print(x);
+}

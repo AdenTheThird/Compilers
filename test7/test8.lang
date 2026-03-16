@@ -1,0 +1,9 @@
+// Tests scopes 
+program
+{
+    int x;
+    {
+        int x;
+        print(1);
+    }
+}

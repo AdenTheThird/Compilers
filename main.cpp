@@ -22,6 +22,7 @@
 #include "cSemantics.h"
 //#include "cCodeGen.h"
 #include "cSymbol.h"
+#include "emit.h"
 
 #define LAB5B
 //#define LAB6
@@ -34,6 +35,7 @@ long long cSymbol::nextId;
 int main(int argc, char **argv)
 {
     std::cout << "Aden Ratliff" << std::endl;
+    InitOutput("langout.sl");
 
     const char *outfile_name;
     int result = 0;
@@ -134,5 +136,6 @@ int main(int argc, char **argv)
         std::cerr << "Junk at end of program\n";
     }
 
+    FinalizeOutput();
     return result;
 }

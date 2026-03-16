@@ -21,7 +21,7 @@ class cIfNode : public cStmtNode
             AddChild(expr);
             AddChild(if_b);
         }
-        
+
         cIfNode(cExprNode* expr, cStmtsNode* if_b, cStmtsNode* else_b) : cStmtNode()
         {
             AddChild(expr);

@@ -1,0 +1,10 @@
+//Test function parameter mismatch 
+program
+{
+    int add(int a, int b)
+    {
+        return a + b;
+    }
+
+//    print(add(1));
+}

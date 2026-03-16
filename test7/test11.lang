@@ -1,0 +1,8 @@
+// Tests function declaration
+program
+{
+    int foo()
+    {
+        print(1);
+    }
+}

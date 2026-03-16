@@ -1,0 +1,21 @@
+.function main
+main:
+ ADJSP 24
+ PUSHVAR  0 
+ PUSH 10 
+ PUSH 10 
+ POPVAR  0 
+ PUSHVAR  20 
+ PUSHVAR  0 
+ PUSHVAR  0 
+ POPVAR  20 
+ PUSHVAR  20 
+ CALL @print
+ PUSHVAR  0 
+ PUSH 99 
+ PUSH 99 
+ POPVAR  0 
+ PUSHVAR  0 
+ CALL @print
+PUSH 0
+RETURNV

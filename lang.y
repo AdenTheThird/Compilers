@@ -144,6 +144,8 @@ block:  open decls stmts close
                                 {
                                   $$ = new cBlockNode($2, $3);
                                 }
+    |   open decls close
+                                { $$ = new cBlockNode($2, nullptr); }
     |   open stmts close
                                 { $$ = new cBlockNode(nullptr, $2); }
 

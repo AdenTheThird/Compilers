@@ -20,8 +20,11 @@ class cBinaryExprNode : public cExprNode
         cBinaryExprNode(cExprNode* expr1, cOpNode* op, cExprNode* expr2) : cExprNode() 
     {
         AddChild(expr1);
+        m_left = expr1;
         AddChild(op);
+        m_op = op->GetOpAsString();
         AddChild(expr2);
+        m_right = expr2;
         m_forceRhs = false;
     }
 
@@ -34,7 +37,19 @@ class cBinaryExprNode : public cExprNode
     }
     virtual string NodeType() { return string("expr"); }
     virtual void Visit(cVisitor *visitor) { visitor->Visit(this); }
+    string GetOp()
+    {
+        return m_op;
+    }
 
+    cExprNode* GetLeft()
+    {
+        return m_left;
+    }
+    cExprNode* GetRight()
+    {
+        return m_right;
+    }
     inline bool IsRelational(int op)
     {
         return op == '>' || op == '<' || op == LE || op == GE || op == EQUALS || op == NOT_EQUALS;
@@ -95,4 +110,7 @@ cDeclNode* GetDecl()
 
     protected:
     bool m_forceRhs;
+    string m_op;
+    cExprNode* m_left;
+    cExprNode* m_right;
 };

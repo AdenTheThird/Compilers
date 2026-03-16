@@ -48,6 +48,11 @@ class cIntExprNode : public cExprNode
             }
         }
 
+        int GetValue() 
+        {
+            return m_value;
+        }
+
     protected:
         int m_value;        // value of integer constant (literal)
 };

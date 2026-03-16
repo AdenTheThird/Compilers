@@ -197,6 +197,10 @@ public:
         m_size = size;
     }
 
+    string GetName()
+    {
+        return m_name->GetName();
+    }
     int DeclCount()
     {
         return m_params ? m_params->Count() : 0;

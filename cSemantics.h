@@ -6,6 +6,7 @@
 #include "cSymbol.h"
 #include "cAssignNode.h"
 #include "cFuncExprNode.h"
+#include "emit.h"
 #include <iostream>
 
 class cSemantics : public cVisitor
@@ -15,10 +16,14 @@ public:
     void Visit(cBlockNode* node);
     void Visit(cDeclsNode* node);
     void Visit(cStmtsNode* node);
+    void Visit(cPrintNode* node);
     void Visit(cAssignNode* node);
     void Visit(cVarDeclNode* node);
     void Visit(cParamsNode* node);
+    void Visit(cIfNode* node);
     void Visit(cFuncDeclNode* node);
+    void Visit(cBinaryExprNode* node);
+    void Visit(cIntExprNode* node);
     void Visit(cVarExprNode* node);
     void Visit(cFuncExprNode* node);
 

@@ -1,0 +1,9 @@
+// Tests function calls
+program
+{
+    int foo()
+    {
+        print(1);
+    }
+    foo();
+}

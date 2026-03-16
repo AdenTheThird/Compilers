@@ -15,7 +15,8 @@ OBJS=main.o \
 	 langparse.o \
 	 cSymbolTable.o \
 	 cVisitor.o \
-	 cSemantics.o
+	 cSemantics.o \
+	 emit.o
 
 all: lang
 
@@ -54,3 +55,6 @@ lang: $(OBJS)
 
 cSymbolTable.o: cSymbolTable.cpp
 	g++ $(COPTS) cSymbolTable.cpp -o cSymbolTable.o
+
+emit.o: emit.cpp
+	g++ $(COPTS) emit.cpp -o emit.o

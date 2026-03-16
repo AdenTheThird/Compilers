@@ -2,13 +2,28 @@
 
 void cSemantics::Visit(cProgramNode* node)
 {
-    //std::cout << "Visiting program node\n";
-    if(node->GetBlock())
+
+    if(node->GetBlock() && node->GetBlock()->GetDecls())
     {
-        Visit(node->GetBlock());
+        for (auto decl : node->GetBlock()->GetDecls()->GetChildren())
+        {
+            if(auto func = dynamic_cast<cFuncDeclNode*>(decl))
+            {
+                Visit(func);
+            }
+            else
+            {
+                decl->Visit(this);
+            }
+        }
     }
 
+    EmitString(".function main\n");
+    EmitString("main:\n");
+
+
     int blockSize = m_highWaterMark;
+    EmitString(" ADJSP " + std::to_string(blockSize) + "\n");
 
     if(blockSize > 1)
     {
@@ -16,7 +31,71 @@ void cSemantics::Visit(cProgramNode* node)
     }
 
     node->SetSize(blockSize);
+
+    if(node->GetBlock()->GetStmts())
+    {
+        for(auto stmt : node->GetBlock()->GetStmts()->GetChildren())
+        {
+            if(!stmt) continue;
+            if(dynamic_cast<cFuncDeclNode*>(stmt)) continue;
+            stmt->Visit(this);
+        }
+    }
+
+    EmitString("PUSH 0\n");
+    EmitString("RETURNV\n");
 }
+
+void cSemantics::Visit(cPrintNode* node)
+{
+    node->GetChild(0)->Visit(this);
+    EmitString(" CALL @print\n");
+}
+
+void cSemantics::Visit(cIfNode* node)
+{
+    std::string elseLabel = GenerateLabel();
+    std::string endLabel = GenerateLabel();
+
+    node->GetChild(0)->Visit(this);
+
+    if(node->NumChildren() > 2)
+    {
+        EmitString(" JUMPE @" + elseLabel + "\n");
+
+        node->GetChild(1)->Visit(this);
+
+        EmitString(" JUMP @" + endLabel + "\n");
+
+        EmitString(elseLabel + ":\n");
+
+        node->GetChild(2)->Visit(this);
+    }
+    else
+    {
+        EmitString(" JUMPE @" + endLabel + "\n");
+        node->GetChild(1)->Visit(this);
+    }
+
+    EmitString(endLabel + ":\n");
+
+}
+
+void cSemantics::Visit(cBinaryExprNode* node)
+{
+    node->GetLeft()->Visit(this);
+    node->GetRight()->Visit(this);
+
+    string op = node->GetOp();
+    if (op == "+") EmitString(" PLUS\n"); 
+    if (op == "-") EmitString(" MINUS\n"); 
+    if (op == "*") EmitString(" TIMES\n"); 
+    if (op == "/") EmitString(" DIVIDE\n"); 
+    if (op == "%") EmitString(" MOD\n"); 
+    if (op == "==") EmitString(" EQ\n");
+    if (op == "!=") EmitString(" NE\n");
+}
+
 void cSemantics::Visit(cBlockNode* node)
 {
     int savedHighWater = m_highWaterMark;
@@ -90,6 +169,7 @@ void cSemantics::Visit(cStmtsNode* node)
 void cSemantics::Visit(cVarDeclNode* node)
 {
     //std::cout << "Visiting var decl node\n";
+
     int size;
     cDeclNode* type = node->GetType();
     if (type->IsArray())
@@ -128,6 +208,10 @@ void cSemantics::Visit(cVarDeclNode* node)
 
 void cSemantics::Visit(cFuncDeclNode* node)
 {
+    if (!node->HasBody())
+    {
+        return;
+    }
     int savedOffset = m_currentOffset;
     int savedHighWater = m_highWaterMark;
 
@@ -184,15 +268,29 @@ void cSemantics::Visit(cFuncDeclNode* node)
         m_currentOffset = declOffset;
     }
 
+    std::string name = node->GetName();
+    EmitString(".function " + name + "\n");
+    EmitString(name + ":\n");
+
+    int funcSize = node->GetSize();
+    if(funcSize > 0)
+    {
+        EmitString(" ADJSP " + std::to_string(funcSize) + "\n");
+    }
+
     if (node->GetStmts())
     {
         Visit(node->GetStmts());
     }
 
+    EmitString("RETURNV\n");
+
     if(node->GetDecls())
     {
         node->SetSize(node->GetDecls()->GetSize());
     }
+
+
     m_currentOffset = savedOffset;
     m_highWaterMark = savedHighWater;
 }
@@ -202,6 +300,12 @@ void cSemantics::Visit(cAssignNode* node)
     //std::cout << "Visiting assign node\n";
     cVarExprNode* lhs = node->GetLhs();
     cExprNode* rhs = node->GetRhs();
+
+    rhs->Visit(this);
+
+    EmitString(" POPVAR ");
+    EmitInt(lhs->GetDecl()->GetOffset());
+    EmitString("\n");
 
     if (!lhs || !rhs)
     {
@@ -232,7 +336,43 @@ void cSemantics::Visit(cVarExprNode* node)
 {
     //std::cout << "Visiting var expr node\n";
     cDeclNode* decl = node->GetDecl();
+
     cDeclNode* typeDecl = decl->GetType();
+    if(!decl->IsArray())
+    {
+        EmitString( " PUSHVAR ");
+        EmitInt(decl->GetOffset());
+        EmitString("\n");
+    }
+    else
+    {
+
+        cArrayDeclNode* arrayDecl = dynamic_cast<cArrayDeclNode*>(decl->GetType());
+        EmitString(" PUSHVAR ");
+        EmitInt(decl->GetOffset());
+        EmitString("\n");
+
+        int elementSize = (arrayDecl->GetBaseType()->GetName() == "char") ? 1 : 4;
+
+        for (auto idxNode : node->indices)
+        {
+            cExprNode* idxExpr = dynamic_cast<cExprNode*>(idxNode);
+            if(!idxExpr) continue;
+
+            idxExpr->Visit(this);
+
+            if (elementSize != 1)
+            {
+                EmitString(" PUSH");
+                EmitInt(elementSize);
+                EmitString("\n");
+                EmitString(" TIMES\n");
+            }
+
+            EmitString(" PLUS\n");
+        }
+    }
+
 
     if(typeDecl->IsArray())
     {
@@ -246,6 +386,7 @@ void cSemantics::Visit(cVarExprNode* node)
             node->SetRowSize(4);
         }
     }
+
 
     if (decl->IsFunc())
     {
@@ -269,6 +410,13 @@ void cSemantics::Visit(cVarExprNode* node)
     }
 }
 
+void cSemantics::Visit(cIntExprNode* node)
+{
+    EmitString(" PUSH");
+    EmitInt(node->GetValue());
+    EmitString("\n");
+}
+
 void cSemantics::Visit(cFuncExprNode* node) 
 {
     //std::cout << "Visiting func expr node\n";
@@ -276,6 +424,12 @@ void cSemantics::Visit(cFuncExprNode* node)
     cFuncDeclNode* funcDecl = dynamic_cast<cFuncDeclNode*>(decl);
     if (!funcDecl) return;
 
+    if (!funcDecl->GetParams() || !node->GetParams())
+    {
+        EmitString("CALL @" + funcDecl->GetName() + "\n");
+        return;
+    }
+    string name = funcDecl->GetName();
     node->GetParams()->SetSize(funcDecl->GetParams()->GetSize());
     int exprCount = node->ExprCount();
     //if (exprCount > 0) exprCount--;
@@ -320,5 +474,13 @@ void cSemantics::Visit(cFuncExprNode* node)
         }
     }
 
+    auto callArgs2 = node->GetParams()->GetChildren();
+    for (auto exprNode : callArgs2)
+    {
+        auto expr = dynamic_cast<cExprNode*>(exprNode);
+        if(expr) expr->Visit(this);
+    }
+
+    EmitString("CALL @" + name + "\n");
 }
 

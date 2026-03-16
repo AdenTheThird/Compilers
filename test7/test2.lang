@@ -1,0 +1,12 @@
+// Test variable assignments and printing
+program
+{
+    int x;
+    int y;
+    x = 5;
+    y = 255;
+    print(x);
+    print(y);
+    y = x;
+    print(y);
+}

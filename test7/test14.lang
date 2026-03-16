@@ -1,0 +1,10 @@
+//Tests function call with multiple parameters
+program
+{
+    int add(int a, int b)
+    {
+        return a + b;
+    }
+
+    print(add(1, 33));
+}
